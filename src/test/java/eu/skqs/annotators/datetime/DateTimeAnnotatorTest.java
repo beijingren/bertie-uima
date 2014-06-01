@@ -1,8 +1,11 @@
 package eu.skqs.annotators.datetime;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -16,11 +19,19 @@ import eu.skqu.datetime.Dynasty;
 
 public class DateTimeAnnotatorTest {
 
+	// Text to be analysed
+	private String documentText;
+
+	@Before
+	public void setUp() throws IOException {
+		documentText = "唐朝全盛時";
+	}
+
 	@Test
 	public void testDynasties() throws Exception {
 		JCas aJCas = JCasFactory.createJCas();
 
-		aJCas.setDocumentText("唐朝全盛時");
+		aJCas.setDocumentText(documentText);
 
 		AnalysisEngine datetimeAnnotatorAE = AnalysisEngineFactory
 		    .createEngine(DateTimeAnalysisEngine.class);
