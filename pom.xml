@@ -1,52 +1,52 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>eu.skqu.time</groupId>
-  <artifactId>time</artifactId>
-  <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>time</name>
-  <url>http://maven.apache.org</url>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-        <properties>
-                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-                <java.target>1.6</java.target>
-        </properties>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>eu.skqu</groupId>
+	<artifactId>bertie-uima</artifactId>
+	<packaging>jar</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>bertie-uima</name>
+	<url>http://maven.apache.org</url>
 
- <build>
-  <plugins>
+	<properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	<java.target>1.6</java.target>
+	</properties>
+
+	<build>
+	<plugins>
 	<plugin>
-		<artifactId>maven-compiler-plugin</artifactId>
-		<version>2.3.2</version>
-		<configuration>
-			<source>1.6</source>
-			<target>1.6</target>
-		</configuration>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<version>2.3.2</version>
+	<configuration>
+	<source>1.6</source>
+	<target>1.6</target>
+	</configuration>
 	</plugin>
 
-
 	<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<id>addToSourceFolder</id>
-						<goals>
-							<!--add the generated sources-->
-							<goal>add-source</goal>
-						</goals>
-						<phase>process-sources</phase>
-						<configuration>
-							<sources>
-								<!--default path to generated sources-->
-								<source>${project.build.directory}/generated-sources/jcasgen</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+	<groupId>org.codehaus.mojo</groupId>
+	<artifactId>build-helper-maven-plugin</artifactId>
+	<version>1.8</version>
+	<executions>
+	<execution>
+	<id>addToSourceFolder</id>
+	<goals>
+	<!--add the generated sources-->
+	<goal>add-source</goal>
+	</goals>
+	<phase>process-sources</phase>
+	<configuration>
+	<sources>
+	<!--default path to generated sources-->
+	<source>${project.build.directory}/generated-sources/jcasgen</source>
+	</sources>
+	</configuration>
+	</execution>
+	</executions>
+	</plugin>
 
 	<plugin>
 	<groupId>org.apache.uima</groupId>
@@ -99,20 +99,19 @@
 	</plugins>
 	</build>
 
+	<dependencies>
+	<dependency>
+	<groupId>junit</groupId>
+	<artifactId>junit</artifactId>
+	<version>4.11</version>
+	<scope>test</scope>
+	</dependency>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
+	<dependency>
+	<groupId>org.apache.uima</groupId>
+	<artifactId>uimafit-core</artifactId>
+	<version>2.0.0</version>
+	</dependency>
 
-<dependency>
-  <groupId>org.apache.uima</groupId>
-  <artifactId>uimafit-core</artifactId>
-  <version>2.0.0</version>
-</dependency>
-
-  </dependencies>
+	</dependencies>
 </project>
