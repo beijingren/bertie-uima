@@ -19,6 +19,7 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Dynasties
 	private Pattern mDynastiesPattern = Pattern.compile("唐");
+	private int totalDynasties = 0;
 
 	// Logger
 	private Logger logger;
@@ -47,9 +48,16 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 			annotation.addToIndexes();
 
+			totalDynasties++;
+
 			logger.log(Level.FINEST, "Found: " + annotation);
 
 			pos = matcher.end();
 		}
+	}
+
+	@Override
+	public void collectionProcessComplete() throws AnalysisEngineProcessException {
+		System.out.println("Total dynasties: " + totalDynasties);
 	}
 }
