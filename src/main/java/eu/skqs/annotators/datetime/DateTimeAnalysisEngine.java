@@ -12,7 +12,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
 
-import eu.skqu.datetime.Dynasty;
+import eu.skqs.type.Dynasty;
 
 
 public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {

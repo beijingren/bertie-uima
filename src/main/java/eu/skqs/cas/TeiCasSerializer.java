@@ -9,7 +9,7 @@ import org.apache.uima.cas.FSIterator;
 
 import org.xml.sax.ContentHandler;
 
-import eu.skqu.datetime.Dynasty;
+import eu.skqs.type.Dynasty;
 
 
 public class TeiCasSerializer {

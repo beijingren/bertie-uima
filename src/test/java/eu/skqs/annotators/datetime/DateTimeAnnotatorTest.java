@@ -14,7 +14,7 @@ import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 
-import eu.skqu.datetime.Dynasty;
+import eu.skqs.type.Dynasty;
 
 
 public class DateTimeAnnotatorTest {

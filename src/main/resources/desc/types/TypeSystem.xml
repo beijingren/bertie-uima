@@ -28,7 +28,7 @@
 	<version>1.0</version>
 	<types>
 		<typeDescription>
-			<name>eu.skqu.datetime.Dynasty</name>
+			<name>eu.skqs.type.Dynasty</name>
 			<description></description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
 			<features>
