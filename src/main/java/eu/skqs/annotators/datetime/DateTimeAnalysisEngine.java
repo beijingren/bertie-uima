@@ -2,6 +2,7 @@ package eu.skqs.annotators.datetime;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.HashMap;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -12,21 +13,45 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
 
+import com.google.common.base.Joiner;
+
 import eu.skqs.type.Dynasty;
 
 
 public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Dynasties
-	private Pattern mDynastiesPattern = Pattern.compile("唐");
-	private int totalDynasties = 0;
+	private Pattern mDynastiesPattern;
+	private HashMap<String, String> mDynasties;
 
 	// Logger
 	private Logger logger;
 
+	// Annotation
+	private int totalDynasties = 0;
+
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
+
+		mDynasties = new HashMap<String, String>();
+		mDynasties.put("三國", "XXX");
+		mDynasties.put("隋", "XXX");
+		mDynasties.put("唐", "XXX");
+		mDynasties.put("五代", "XXX");
+		mDynasties.put("後蜀", "XXX");
+		mDynasties.put("吳", "XXX");
+		mDynasties.put("南唐", "XXX");
+		mDynasties.put("吳越", "XXX");
+		mDynasties.put("宋", "XXX");
+		mDynasties.put("遼", "XXX");
+		mDynasties.put("金", "XXX");
+		mDynasties.put("元", "XXX");
+		mDynasties.put("明", "XXX");
+		mDynasties.put("清", "XXX");
+		mDynasties.put("國朝", "XXX");
+
+		mDynastiesPattern = Pattern.compile(Joiner.on("|").join(mDynasties.keySet()));
 
 		logger = getContext().getLogger();
 	}
