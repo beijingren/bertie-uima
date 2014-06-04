@@ -20,6 +20,7 @@ import org.apache.uima.util.FileUtils;
 
 import eu.skqs.type.Dynasty;
 import eu.skqs.annotators.datetime.DateTimeAnalysisEngine;
+import eu.skqs.annotators.interpunction.InterpunctionAnalysisEngine;
 
 
 public class TeiCasSerializerTest {
@@ -42,10 +43,13 @@ public class TeiCasSerializerTest {
 		AnalysisEngine datetimeAE = AnalysisEngineFactory
 		    .createEngine(DateTimeAnalysisEngine.class);
 
+		AnalysisEngine interpunctionAE = AnalysisEngineFactory
+		    .createEngine(InterpunctionAnalysisEngine.class);
+
 		AnalysisEngine teiAE = AnalysisEngineFactory
 		    .createEngine(TeiAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(aJCas, datetimeAE, teiAE);
+		SimplePipeline.runPipeline(aJCas, datetimeAE, interpunctionAE, teiAE);
 
 		assertEquals(149, JCasUtil.select(aJCas, Dynasty.class).size());
 	}

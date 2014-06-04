@@ -24,6 +24,9 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	private Pattern mDynastiesPattern;
 	private HashMap<String, String> mDynasties;
 
+	// Temporal markers
+	private Pattern mTemporalPattern = Pattern.compile("以前|以後");
+
 	// Logger
 	private Logger logger;
 
@@ -76,6 +79,14 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 			totalDynasties++;
 
 			logger.log(Level.FINEST, "Found: " + annotation);
+
+			pos = matcher.end();
+		}
+
+		// Temporal
+		pos = 0;
+		matcher = mTemporalPattern.matcher(docText);
+		while (matcher.find(pos)) {
 
 			pos = matcher.end();
 		}

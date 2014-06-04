@@ -39,5 +39,14 @@
 				</featureDescription>
 			</features>
 		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.Interpunction</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
 	</types>
 </typeSystemDescription>
