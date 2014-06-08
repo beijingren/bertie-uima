@@ -1,3 +1,4 @@
+package eu.skqs.collection;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +19,7 @@ import org.xml.sax.SAXException;
 import eu.skqs.cas.TeiDeserializer;
 
 
-public class TeiReader extends CollectionReader_ImplBase {
+public class TeiCollectionReader extends CollectionReader_ImplBase {
 	/**
 	 * Name of configuration parameter that must be set to the path of a directory containing input
 	 * files.
