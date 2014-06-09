@@ -73,6 +73,7 @@ public class TeiCollectionReader extends CollectionReader_ImplBase {
 
 	@Override
 	public void getNext(CAS aCAS) throws IOException, CollectionException {
+
 		File currentFile = (File) mFiles.get(mCurrentIndex++);
 		FileInputStream inputStream = new FileInputStream(currentFile);
 

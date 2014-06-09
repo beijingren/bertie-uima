@@ -25,6 +25,7 @@ import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.test.junit_extension.JUnitExtension;
+import org.apache.uima.fit.component.CasDumpWriter;
 
 import org.junit.Test;
 
@@ -43,6 +44,11 @@ public class TeiCollectionReaderTest {
 		    TeiCollectionReader.PARAM_INPUTDIR,
 		    JUnitExtension.getURL("texts/TeiCollectionReader").getPath());
 
-		SimplePipeline.runPipeline(reader);
+		AnalysisEngineDescription dump =
+		    AnalysisEngineFactory.createEngineDescription(
+		    CasDumpWriter.class,
+		    CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/uima-dump.txt");
+
+		SimplePipeline.runPipeline(reader, dump);
 	}
 }

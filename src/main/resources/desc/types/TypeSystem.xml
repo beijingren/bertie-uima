@@ -48,5 +48,94 @@
 			</features>
 		</typeDescription>
 
+		<typeDescription>
+			<name>eu.skqs.type.Pc</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.Body</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.Text</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.P</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.Div</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.PersName</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.PlaceName</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.Date</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.Title</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.DateRange</name>
+			<description>Contains a phrase delimiting a time period</description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+				<featureDescription>
+					<name>from</name>
+					<description>Begin of time period</description>
+					<rangeTypeName>uima.cas.Integer</rangeTypeName>
+				</featureDescription>
+				<featureDescription>
+					<name>to</name>
+					<description>End of time period</description>
+					<rangeTypeName>uima.cas.Integer</rangeTypeName>
+				</featureDescription>
+			</features>
+		</typeDescription>
 	</types>
 </typeSystemDescription>
