@@ -20,6 +20,8 @@
 package eu.skqs.bertie.annotators;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -36,6 +38,10 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.test.junit_extension.JUnitExtension;
 import org.apache.uima.util.FileUtils;
+import org.apache.uima.util.XMLSerializer;
+import org.apache.uima.cas.impl.XCASSerializer;
+
+import org.xml.sax.SAXException;
 
 import eu.skqs.type.Dynasty;
 // import eu.skqs.annotators.datetime.DateTimeAnalysisEngine;
@@ -70,6 +76,16 @@ public class TeiCasSerializerTest {
 		    .createEngine(TeiAnalysisEngine.class);
 
 		SimplePipeline.runPipeline(aJCas, datetimeAE, interpunctionAE, teiAE);
+
+		XCASSerializer ser = new XCASSerializer(aJCas.getTypeSystem());
+		OutputStream outputStream = new FileOutputStream("/tmp/xcas");
+		XMLSerializer xmlSer = new XMLSerializer(outputStream);
+
+		try {
+			ser.serialize(aJCas.getCas(), xmlSer.getContentHandler());
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
 
 		assertEquals(149, JCasUtil.select(aJCas, Dynasty.class).size());
 	}

@@ -1,4 +1,4 @@
-package eu.skqs.cas;
+package eu.skqs.bertie.cas;
 
 import java.io.OutputStream;
 
@@ -48,21 +48,16 @@ public class TeiCasSerializer {
 		System.out.println(Dynasty.type);
 		System.out.println(Interpunction.type);
 
-		int count = 0;
-		AnnotationIndex annotationIndex = aJCas.getAnnotationIndex();
-		FSIterator  annotationIterator = annotationIndex.iterator(true);
-		Annotation annotation;
-		while (annotationIterator.hasNext()) {
-			count++;
-			annotation = (Annotation)annotationIterator.next();
-			if (count == 2) {
-				Type type = annotation.getType();
-				System.out.println(annotation.getClass());
-				System.out.println(aJCas.getType(Interpunction.type));
-				System.out.println(annotation.getType());
-			}
-		}
 
-		System.out.println("Count: " + count);
+		FSIterator annotationIterator = aJCas.getAnnotationIndex().iterator();
+
+		while (annotationIterator.hasNext()) {
+			Annotation annotation = (Annotation)annotationIterator.next();
+
+				//Type type = annotation.getType();
+				//System.out.println(annotation.getClass());
+				//System.out.println(aJCas.getType(Interpunction.type));
+			System.out.println(annotation.getType().getName());
+		}
 	}
 }

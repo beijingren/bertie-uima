@@ -29,7 +29,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.XMLSerializer;
 
-import eu.skqs.cas.TeiCasSerializer;
+import eu.skqs.bertie.cas.TeiCasSerializer;
 
 
 // TeiCasConsumer

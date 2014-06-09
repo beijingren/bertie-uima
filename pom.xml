@@ -56,7 +56,6 @@
 	<configuration>
 	<typeSystemIncludes>
 	<include>src/main/resources/desc/types/TypeSystem.xml</include>
-	<!--<include>src/main/resources/desc/types/OtherTypeSystem.xml</include>-->
 	</typeSystemIncludes>
 	</configuration>
 

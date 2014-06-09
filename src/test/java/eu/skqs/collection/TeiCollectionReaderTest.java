@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import eu.skqs.bertie.collection.TeiCollectionReader;
 import eu.skqs.bertie.annotators.DateTimeAnalysisEngine;
+import eu.skqs.bertie.annotators.TeiAnalysisEngine;
 
 
 public class TeiCollectionReaderTest {
@@ -49,6 +50,18 @@ public class TeiCollectionReaderTest {
 		    CasDumpWriter.class,
 		    CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/uima-dump.txt");
 
-		SimplePipeline.runPipeline(reader, dump);
+/*
+		AnalysisEngineDescription writer =
+		    AnalysisEngineFactory.createEngineDescription(
+		    XWriter.class,
+		    XWriter.PARAM_OUTPUT_DIRECTORY_NAME, "/tmp",
+		    XWriter.PARAM_XML_SCHEME_NAME, "XCAS");
+*/
+
+		AnalysisEngineDescription serializer =
+		    AnalysisEngineFactory.createEngineDescription(
+		    TeiAnalysisEngine.class);
+
+		SimplePipeline.runPipeline(reader, dump, serializer);
 	}
 }
