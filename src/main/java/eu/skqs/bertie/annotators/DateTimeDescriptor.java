@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package eu.skqs.annotators.datetime;
+package eu.skqs.bertie.annotators;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

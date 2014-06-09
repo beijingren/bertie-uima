@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package eu.skqs.annotators.tei;
+package eu.skqs.bertie.annotators;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

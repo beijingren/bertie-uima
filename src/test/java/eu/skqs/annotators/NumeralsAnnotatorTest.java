@@ -38,7 +38,7 @@ import org.apache.uima.test.junit_extension.JUnitExtension;
 import org.apache.uima.util.FileUtils;
 
 import eu.skqs.type.Dynasty;
-import eu.skqs.annotators.NumberUnitAnalysisEngine;
+import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
 
 
 public class NumeralsAnnotatorTest {

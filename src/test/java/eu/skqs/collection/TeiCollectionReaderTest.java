@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package eu.skqs.collection;
+package eu.skqs.bertie.collection;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
@@ -29,8 +29,8 @@ import org.apache.uima.fit.component.CasDumpWriter;
 
 import org.junit.Test;
 
-import eu.skqs.collection.TeiCollectionReader;
-import eu.skqs.annotators.datetime.DateTimeAnalysisEngine;
+import eu.skqs.bertie.collection.TeiCollectionReader;
+import eu.skqs.bertie.annotators.DateTimeAnalysisEngine;
 
 
 public class TeiCollectionReaderTest {

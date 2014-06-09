@@ -1,4 +1,4 @@
-package eu.skqs.collection;
+package eu.skqs.bertie.collection;
 
 import java.io.File;
 import java.io.FileInputStream;

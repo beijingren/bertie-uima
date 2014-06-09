@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package eu.skqs.annotators.tei;
+package eu.skqs.bertie.annotators;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,8 +38,9 @@ import org.apache.uima.test.junit_extension.JUnitExtension;
 import org.apache.uima.util.FileUtils;
 
 import eu.skqs.type.Dynasty;
-import eu.skqs.annotators.datetime.DateTimeAnalysisEngine;
-import eu.skqs.annotators.interpunction.InterpunctionAnalysisEngine;
+// import eu.skqs.annotators.datetime.DateTimeAnalysisEngine;
+import eu.skqs.bertie.annotators.InterpunctionAnalysisEngine;
+import eu.skqs.bertie.annotators.TeiAnalysisEngine;
 
 
 public class TeiCasSerializerTest {

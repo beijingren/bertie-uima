@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package eu.skqs.annotators.datetime;
+package eu.skqs.bertie.annotators;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
