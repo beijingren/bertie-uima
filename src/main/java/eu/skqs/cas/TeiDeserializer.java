@@ -78,6 +78,12 @@ public class TeiDeserializer {
 		}
 
 		@Override
+		public void endDocument() throws SAXException {
+			mJCas.setDocumentText(buffer.toString());
+			mJCas.setDocumentLanguage("zh");
+		}
+
+		@Override
 		public void startElement(String aUri, String aLocalName, String qName,
 		    Attributes aAttributes) throws SAXException {
 
@@ -163,11 +169,7 @@ public class TeiDeserializer {
 			StringBuffer stringBuffer = new StringBuffer();
 			stringBuffer.append(aChar, aStart, aLength);
 
-			// buffer.append(aChar, aStart, aLength);
-
 			buffer.append(stringBuffer.toString().trim());
-
-			System.out.print(stringBuffer.toString().trim());
 		}
 	}
 }
