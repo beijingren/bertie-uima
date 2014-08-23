@@ -11,6 +11,8 @@ import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.cas.Type;
 
+import org.apache.uima.internal.util.XmlElementName;
+
 import org.xml.sax.ContentHandler;
 
 import eu.skqs.type.Dynasty;
@@ -18,6 +20,10 @@ import eu.skqs.type.Interpunction;
 
 
 public class TeiCasSerializer {
+
+	// TODO
+	public TeiCasSerializer() {
+	}
 
 	public TeiCasSerializer(TypeSystem aTypeSystem) {
 	}
