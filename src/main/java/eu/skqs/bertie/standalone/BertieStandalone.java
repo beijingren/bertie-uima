@@ -20,12 +20,13 @@
 package eu.skqs.bertie.standalone;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,14 +81,14 @@ public class BertieStandalone {
 
 		TeiCasSerializer teiSer = new TeiCasSerializer();
 
-		teiSer.serialize(jcas, xmlSer.getContentHandler());
+		result = teiSer.serialize(jcas, xmlSer.getContentHandler());
 /*
 		try {
 		} catch (SAXException e) {
 			e.printStackTrace();
 		}
 */
-		System.out.println(outputStream.toString());
+//		System.out.println(outputStream.toString());
 
 		return result;
 	}
@@ -126,12 +127,21 @@ public class BertieStandalone {
 			}
 
 			String input = sb.toString();
+			fileReader.close();
 
 			BertieStandalone standalone = new BertieStandalone();
 
 			String output = standalone.process(input);
+			if (output == null) {
+				logger.log(Level.WARNING, "Empty processing result.");
+				System.exit(-1);
+			}
 
-			logger.log(Level.INFO, output);
+			PrintWriter fileWriter = new PrintWriter(documentPath, encodingType);
+			fileWriter.write(output);
+			fileWriter.close();
+
+			// logger.log(Level.INFO, output);
 
 		} catch (Exception e) {
 			e.printStackTrace();

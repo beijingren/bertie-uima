@@ -59,7 +59,7 @@ public class TeiAnalysisEngine extends JCasAnnotator_ImplBase {
 			TeiCasSerializer teiSerializer = new TeiCasSerializer(aJCas.getTypeSystem());
 			XMLSerializer xmlSerializer = new XMLSerializer(aStream, false);
 
-			teiSerializer.serialize(aJCas, xmlSerializer.getContentHandler());
+			String result = teiSerializer.serialize(aJCas, xmlSerializer.getContentHandler());
 		} finally {
 			if (aStream != null) {
 				aStream.close();

@@ -28,42 +28,33 @@ public class TeiCasSerializer {
 	public TeiCasSerializer(TypeSystem aTypeSystem) {
 	}
 
-	public static void serialize(JCas aJCas, ContentHandler contentHandler) {
+	public static String serialize(JCas aJCas, ContentHandler contentHandler) {
 
 		String documentText = aJCas.getDocumentText();
+		String result = "";
 		int startPosition = 0;
 		int endPosition = documentText.length();
-
-		FSIndex dynastyIndex = aJCas.getAnnotationIndex(Dynasty.type);
-		FSIterator dynastyIterator = dynastyIndex.iterator();
-
-		while (dynastyIterator.hasNext()) {
-
-			Dynasty dynasty = (Dynasty)dynastyIterator.next();
-
-			endPosition = dynasty.getBegin();
-
-			System.out.println(documentText.substring(startPosition, endPosition));
-			System.out.print("<date>");
-			System.out.print(dynasty.getCoveredText());
-			System.out.println("</date>");
-
-			startPosition = dynasty.getEnd();
-		}
-
-		System.out.println(Dynasty.type);
-		System.out.println(Interpunction.type);
-
 
 		FSIterator annotationIterator = aJCas.getAnnotationIndex().iterator();
 
 		while (annotationIterator.hasNext()) {
 			Annotation annotation = (Annotation)annotationIterator.next();
 
-				//Type type = annotation.getType();
-				//System.out.println(annotation.getClass());
-				//System.out.println(aJCas.getType(Interpunction.type));
-			System.out.println(annotation.getType().getName());
+			String annotationName = annotation.getType().getName();
+			if (annotationName.equals("eu.skqs.type.Interpunction")) {
+				endPosition = annotation.getBegin();
+			
+				result += documentText.substring(startPosition, endPosition);
+				result += "\n";
+				result += "<pc>";
+				result += annotation.getCoveredText();
+				result += "</pc>";
+				result += "\n";
+
+				startPosition = annotation.getEnd();
+			}
 		}
+
+		return result;
 	}
 }
