@@ -19,6 +19,9 @@
 
 package eu.skqs.bertie.annotators;
 
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.HashMap;
@@ -32,29 +35,69 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+
 import com.google.common.base.Joiner;
 
-import eu.skqs.type.Num;
+import eu.skqs.type.PersName;
 
 
-public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
+public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Interpuction
-	private Pattern mNumeralsPattern;
+	private Pattern mPersNamePattern;
 
 	// Logger
 	private Logger logger;
 
 	// Annotation
-	private int totalNumerals = 0;
+	private int totalPersName = 0;
+
+	// RDF
+	private String rdfFile = "/docker/dublin-store/rdf/sikuquanshu.rdf";
 
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 
-		mNumeralsPattern = Pattern.compile("[一二三四五六七八九十]+");
-
+		// Logger
 		logger = getContext().getLogger();
+
+		// SPARQL
+		InputStream in = null;
+		try {
+			in = new FileInputStream(new File(rdfFile));
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Could not find: " +
+			     rdfFile);
+			throw new ResourceInitializationException();
+		}
+
+		Model model = ModelFactory.createMemModelMaker().createModel("SKQS");
+		model.read(in, null);
+		try {
+			in.close();
+		} catch (Exception e) {
+		}
+
+		String queryString = "SELECT * WHERE { ?s ?p ?o . }";
+
+		Query query = QueryFactory.create(queryString);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+		ResultSet results = qe.execSelect();
+
+		ResultSetFormatter.out(System.out, results, query);
+
+		mPersNamePattern = Pattern.compile("，|。|！|、|“|”|「|」|：|？|《|》|•");
+
+		qe.close();
 	}
 
 	@Override
@@ -65,31 +108,26 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		int pos = 0;
 
-		// Numerals
-		Matcher matcher = mNumeralsPattern.matcher(docText);
+		// Interpuction
+		Matcher matcher = mPersNamePattern.matcher(docText);
 		while (matcher.find(pos)) {
 
 			// Found match
-			Num annotation = new Num(aJCas, matcher.start(), matcher.end());
+			PersName annotation = new PersName(aJCas, matcher.start(), matcher.end());
 
 			annotation.addToIndexes();
 
-			// value
-			// measure
-
-			totalNumerals++;
+			totalPersName++;
 
 			logger.log(Level.FINEST, "Found: " + annotation);
 
 			pos = matcher.end();
 		}
 
-		System.out.println("Num: " + totalNumerals);
-
 	}
 
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
-		System.out.println("Total interpunction: " + totalNumerals);
+		System.out.println("Total interpunction: " + totalPersName);
 	}
 }

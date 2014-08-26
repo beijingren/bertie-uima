@@ -52,6 +52,17 @@ public class TeiCasSerializer {
 				result += "\n";
 
 				startPosition = annotation.getEnd();
+			} else if (annotationName.equals("eu.skqs.type.Num")) {
+				endPosition = annotation.getBegin();
+
+				result += documentText.substring(startPosition, endPosition);
+				result += "\n";
+				result += "<num>";
+				result += annotation.getCoveredText();
+				result += "</num>";
+				result += "\n";
+
+				startPosition = annotation.getEnd();
 			}
 		}
 

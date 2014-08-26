@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.uima.fit.factory.JCasFactory;
+import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.jcas.JCas;
 
 // TODO
@@ -45,6 +46,10 @@ import org.apache.uima.cas.impl.XCASSerializer;
 import org.apache.uima.util.XMLSerializer;
 
 import org.xml.sax.SAXException;
+
+import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
+import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
+
 
 public class BertieStandalone {
 
@@ -73,7 +78,13 @@ public class BertieStandalone {
 		AnalysisEngine engine1 = AnalysisEngineFactory
 		    .createEngine(InterpunctionAnalysisEngine.class);
 
-		engine1.process(jcas);
+		AnalysisEngine engine2 = AnalysisEngineFactory
+		    .createEngine(NumberUnitAnalysisEngine.class);
+
+		AnalysisEngine engine3 = AnalysisEngineFactory
+		    .createEngine(PersNameAnalysisEngine.class);
+
+		SimplePipeline.runPipeline(jcas, engine1, engine2, engine3);
 
 		XCASSerializer ser = new XCASSerializer(jcas.getTypeSystem());
 		OutputStream outputStream = new ByteArrayOutputStream();
