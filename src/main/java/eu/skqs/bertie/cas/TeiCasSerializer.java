@@ -41,29 +41,46 @@ public class TeiCasSerializer {
 			Annotation annotation = (Annotation)annotationIterator.next();
 
 			String annotationName = annotation.getType().getName();
+			String tagName = null;
+
 			if (annotationName.equals("eu.skqs.type.Interpunction")) {
+				tagName = "pc";
 				endPosition = annotation.getBegin();
-			
+
 				result += documentText.substring(startPosition, endPosition);
 				result += "\n";
-				result += "<pc>";
+				result += "<" + tagName + ">";
 				result += annotation.getCoveredText();
-				result += "</pc>";
+				result += "</" + tagName + ">";
 				result += "\n";
 
 				startPosition = annotation.getEnd();
 			} else if (annotationName.equals("eu.skqs.type.Num")) {
+				tagName = "num";
 				endPosition = annotation.getBegin();
 
 				result += documentText.substring(startPosition, endPosition);
 				result += "\n";
-				result += "<num>";
+				result += "<" + tagName + ">";
 				result += annotation.getCoveredText();
-				result += "</num>";
+				result += "</" + tagName + ">";
+				result += "\n";
+
+				startPosition = annotation.getEnd();
+			} else if (annotationName.equals("eu.skqs.type.PersName")) {
+				tagName = "persName";
+				endPosition = annotation.getBegin();
+
+				result += documentText.substring(startPosition, endPosition);
+				result += "\n";
+				result += "<" + tagName + ">";
+				result += annotation.getCoveredText();
+				result += "</" + tagName + ">";
 				result += "\n";
 
 				startPosition = annotation.getEnd();
 			}
+
 		}
 
 		return result;

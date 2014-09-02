@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -39,10 +40,13 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 import com.google.common.base.Joiner;
 
@@ -62,6 +66,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// RDF
 	private String rdfFile = "/docker/dublin-store/rdf/sikuquanshu.rdf";
+	private int prefixLength = "http://example.org/owl/sikuquanshu#".length();
 
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -87,17 +92,40 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		} catch (Exception e) {
 		}
 
-		String queryString = "SELECT * WHERE { ?s ?p ?o . }";
+		// TODO: remove prefix : from results
+		String queryString =
+			"PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
+			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+			"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
+			"SELECT ?s WHERE { ?s rdf:type owl:NamedIndividual . }";
 
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
-		ResultSet results = qe.execSelect();
 
-		ResultSetFormatter.out(System.out, results, query);
+		Vector namedIndividuals = new Vector();
 
-		mPersNamePattern = Pattern.compile("，|。|！|、|“|”|「|」|：|？|《|》|•");
+		try {
+			ResultSet rs = qe.execSelect();
 
-		qe.close();
+			for (; rs.hasNext();) {
+				QuerySolution rb = rs.nextSolution();
+
+				RDFNode x = rb.get("s");
+				if (x.isLiteral()) {
+					Literal subjectStr = (Literal)x;
+				} else {
+				}
+
+				namedIndividuals.add(x.toString().substring(prefixLength));
+			}
+
+			// ResultSetFormatter.out(System.out, rs, query);
+
+		} finally {
+			qe.close();
+		}
+
+		mPersNamePattern = Pattern.compile(Joiner.on("|").join(namedIndividuals));
 	}
 
 	@Override
@@ -119,8 +147,6 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 			totalPersName++;
 
-			logger.log(Level.FINEST, "Found: " + annotation);
-
 			pos = matcher.end();
 		}
 
@@ -128,6 +154,6 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
-		System.out.println("Total interpunction: " + totalPersName);
+		System.out.println("Total persName: " + totalPersName);
 	}
 }
