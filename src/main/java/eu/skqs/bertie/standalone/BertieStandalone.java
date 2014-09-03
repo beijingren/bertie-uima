@@ -47,8 +47,10 @@ import org.apache.uima.util.XMLSerializer;
 
 import org.xml.sax.SAXException;
 
+import eu.skqs.bertie.annotators.DateTimeAnalysisEngine;
 import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
 import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
+import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
 
 
 public class BertieStandalone {
@@ -84,7 +86,14 @@ public class BertieStandalone {
 		AnalysisEngine engine3 = AnalysisEngineFactory
 		    .createEngine(PersNameAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(jcas, engine1, engine2, engine3);
+		AnalysisEngine engine4 = AnalysisEngineFactory
+		    .createEngine(PlaceNameAnalysisEngine.class);
+
+		AnalysisEngine engine5 = AnalysisEngineFactory
+		    .createEngine(DateTimeAnalysisEngine.class);
+
+		SimplePipeline.runPipeline(jcas, engine1, engine2, engine3,
+		    engine4, engine5);
 
 		XCASSerializer ser = new XCASSerializer(jcas.getTypeSystem());
 		OutputStream outputStream = new ByteArrayOutputStream();
