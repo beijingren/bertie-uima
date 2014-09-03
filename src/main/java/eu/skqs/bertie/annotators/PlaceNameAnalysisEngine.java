@@ -49,19 +49,19 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 
 import com.google.common.base.Joiner;
 
-import eu.skqs.type.PersName;
+import eu.skqs.type.PlaceName;
 
 
-public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
+public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Interpuction
-	private Pattern mPersNamePattern;
+	private Pattern mPlaceNamePattern;
 
 	// Logger
 	private Logger logger;
 
 	// Annotation
-	private int totalPersName = 0;
+	private int totalPlaceNames = 0;
 
 	// RDF
 	private String rdfFile = "/docker/dublin-store/rdf/sikuquanshu.rdf";
@@ -91,16 +91,15 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		} catch (Exception e) {
 		}
 
-		// TODO: remove prefix : from results with bind
 		String queryString =
 			"PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
 			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-			"SELECT ?s WHERE { ?s rdf:type :Person . }";
+			"SELECT ?s WHERE { ?s rdf:type :Xian . }";
 
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
 
-		Vector namedIndividuals = new Vector();
+		Vector placeNames = new Vector();
 
 		try {
 			ResultSet rs = qe.execSelect();
@@ -114,22 +113,19 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 				} else {
 				}
 
-				String individual = x.toString().substring(prefixLength);
+				String placeName = x.toString().substring(prefixLength);
 
 				// Single character names are in general too common,
 				// skip them for now
-				if (individual.length() > 1) {
-					namedIndividuals.add(individual);
+				if (placeName.length() > 1) {
+					placeNames.add(placeName);
 				}
 			}
-
-			// ResultSetFormatter.out(System.out, rs, query);
-
 		} finally {
 			qe.close();
 		}
 
-		mPersNamePattern = Pattern.compile(Joiner.on("|").join(namedIndividuals));
+		mPlaceNamePattern = Pattern.compile(Joiner.on("|").join(placeNames));
 	}
 
 	@Override
@@ -140,24 +136,23 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		int pos = 0;
 
-		// named Individual
-		Matcher matcher = mPersNamePattern.matcher(docText);
+		// Annotate place names
+		Matcher matcher = mPlaceNamePattern.matcher(docText);
 		while (matcher.find(pos)) {
 
 			// Found match
-			PersName annotation = new PersName(aJCas, matcher.start(), matcher.end());
+			PlaceName annotation = new PlaceName(aJCas, matcher.start(), matcher.end());
 
 			annotation.addToIndexes();
 
-			totalPersName++;
+			totalPlaceNames++;
 
 			pos = matcher.end();
 		}
-
 	}
 
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
-		System.out.println("Total Individuals: " + totalPersName);
+		System.out.println("Total Individuals: " + totalPlaceNames);
 	}
 }

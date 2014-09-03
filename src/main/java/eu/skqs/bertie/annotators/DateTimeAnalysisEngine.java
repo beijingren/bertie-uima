@@ -75,6 +75,13 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		mDynastiesPattern = Pattern.compile(Joiner.on("|").join(mDynasties.keySet()));
 
+		// Life points
+		// 及冠
+
+		// Time spans
+		// 百年
+		// 四歲
+
 		logger = getContext().getLogger();
 	}
 
