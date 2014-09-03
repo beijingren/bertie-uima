@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.HashMap;
 import java.util.Vector;
 
 import org.apache.uima.UimaContext;
@@ -37,9 +36,9 @@ import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
 
 import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -116,7 +115,13 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 				} else {
 				}
 
-				namedIndividuals.add(x.toString().substring(prefixLength));
+				String individual = x.toString().substring(prefixLength);
+
+				// Single character names are in general too common,
+				// skip them for now
+				if (individual.length() > 1) {
+					namedIndividuals.add(individual);
+				}
 			}
 
 			// ResultSetFormatter.out(System.out, rs, query);
@@ -136,7 +141,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		int pos = 0;
 
-		// Interpuction
+		// named Individual
 		Matcher matcher = mPersNamePattern.matcher(docText);
 		while (matcher.find(pos)) {
 
@@ -154,6 +159,6 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
-		System.out.println("Total persName: " + totalPersName);
+		System.out.println("Total Individuals: " + totalPersName);
 	}
 }
