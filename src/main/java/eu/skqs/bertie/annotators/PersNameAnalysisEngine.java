@@ -54,8 +54,11 @@ import eu.skqs.type.PersName;
 
 public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
-	// Interpuction
+	// Person names
 	private Pattern mPersNamePattern;
+
+	// Zi
+	private Pattern mZiPattern;
 
 	// Logger
 	private Logger logger;
@@ -130,6 +133,45 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		}
 
 		mPersNamePattern = Pattern.compile(Joiner.on("|").join(namedIndividuals));
+
+		/*
+		 * Zi
+		 */
+		queryString =
+			"PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
+			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+			"SELECT ?zi WHERE { ?s :zi ?zi . }";
+
+		query = QueryFactory.create(queryString);
+		qe = QueryExecutionFactory.create(query, model);
+
+		Vector zis = new Vector();
+
+		try {
+			ResultSet rs = qe.execSelect();
+
+			for (; rs.hasNext();) {
+				QuerySolution rb = rs.nextSolution();
+
+				RDFNode x = rb.get("zi");
+				if (x.isLiteral()) {
+					Literal subjectStr = (Literal)x;
+				} else {
+				}
+
+				String zi = x.toString().substring(prefixLength);
+
+				// Single character names are in general too common,
+				// skip them for now
+				if (zi.length() > 1) {
+					zis.add(zi);
+				}
+			}
+		} finally {
+			qe.close();
+		}
+
+		mZiPattern = Pattern.compile(Joiner.on("|").join(zis));
 	}
 
 	@Override
@@ -154,6 +196,19 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 			pos = matcher.end();
 		}
 
+		pos = 0;
+		matcher = mZiPattern.matcher(docText);
+		while (matcher.find(pos)) {
+
+			// Found match
+			PersName annotation = new PersName(aJCas, matcher.start(), matcher.end());
+
+			annotation.addToIndexes();
+
+			totalPersName++;
+
+			pos = matcher.end();
+		}
 	}
 
 	@Override
