@@ -28,6 +28,29 @@
 	<version>1.0</version>
 	<types>
 		<typeDescription>
+			<name>eu.skqs.type.Tei</name>
+			<description>Root type of TEI documents</description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+				<featureDescription>
+					<name>title</name>
+					<description>Title of this text (chinese).</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
+				<featureDescription>
+					<name>title_en</name>
+					<description>Title of this text (english).</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
+				<featureDescription>
+					<name>author</name>
+					<description>Author of this text.</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
 			<name>eu.skqs.type.Dynasty</name>
 			<description></description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
@@ -85,6 +108,11 @@
 			<description></description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
 			<features>
+				<featureDescription>
+					<name>chapter</name>
+					<description>Chapter number.</description>
+					<rangeTypeName>uima.cas.Integer</rangeTypeName>
+				</featureDescription>
 			</features>
 		</typeDescription>
 
