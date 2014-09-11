@@ -19,7 +19,18 @@
 
 package eu.skqs.bertie.cas;
 
-import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -34,8 +45,9 @@ import org.apache.uima.internal.util.XmlElementName;
 
 import org.xml.sax.ContentHandler;
 
-import eu.skqs.type.Dynasty;
-import eu.skqs.type.Interpunction;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 
 public class TeiCasSerializer {
@@ -48,72 +60,93 @@ public class TeiCasSerializer {
 	}
 
 	public static String serialize(JCas aJCas, ContentHandler contentHandler) {
-
 		String documentText = aJCas.getDocumentText();
-		String result = "";
+
 		int startPosition = 0;
 		int endPosition = documentText.length();
 
 		FSIterator annotationIterator = aJCas.getAnnotationIndex().iterator();
 
+		DocumentBuilderFactory documentBuilderFactory = null;
+		DocumentBuilder documentBuilder = null;
+		Document document = null;
+
+		try {
+			documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			documentBuilder = documentBuilderFactory.newDocumentBuilder();
+			document = documentBuilder.newDocument();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+
+		Element lastElement = null;
+		Element rootElement = document.createElement("TEI");
+		rootElement.setAttribute("xmlns", "http://www.tei-c.org/ns/1.0");
+		document.appendChild(rootElement);
+
+		lastElement = rootElement;
 		while (annotationIterator.hasNext()) {
 			Annotation annotation = (Annotation)annotationIterator.next();
-
 			String annotationName = annotation.getType().getName();
-			String tagName = null;
+
+			String tagName = "TEST";
+
+			if (annotationName.equals("uima.tcas.DocumentAnnotation")) {
+				continue;
+			}
 
 			if (annotationName.equals("eu.skqs.type.Interpunction")) {
 				tagName = "pc";
-				endPosition = annotation.getBegin();
-
-				result += documentText.substring(startPosition, endPosition);
-				result += "\n";
-				result += "<" + tagName + ">";
-				result += annotation.getCoveredText();
-				result += "</" + tagName + ">";
-				result += "\n";
-
-				startPosition = annotation.getEnd();
 			} else if (annotationName.equals("eu.skqs.type.Num")) {
 				tagName = "num";
-				endPosition = annotation.getBegin();
-
-				result += documentText.substring(startPosition, endPosition);
-				result += "\n";
-				result += "<" + tagName + ">";
-				result += annotation.getCoveredText();
-				result += "</" + tagName + ">";
-				result += "\n";
-
-				startPosition = annotation.getEnd();
 			} else if (annotationName.equals("eu.skqs.type.PersName")) {
 				tagName = "persName";
-				endPosition = annotation.getBegin();
-
-				result += documentText.substring(startPosition, endPosition);
-				result += "\n";
-				result += "<" + tagName + ">";
-				result += annotation.getCoveredText();
-				result += "</" + tagName + ">";
-				result += "\n";
-
-				startPosition = annotation.getEnd();
 			} else if (annotationName.equals("eu.skqs.type.PlaceName")) {
 				tagName = "placeName";
-				endPosition = annotation.getBegin();
-
-				result += documentText.substring(startPosition, endPosition);
-				result += "\n";
-				result += "<" + tagName + ">";
-				result += annotation.getCoveredText();
-				result += "</" + tagName + ">";
-				result += "\n";
-
-				startPosition = annotation.getEnd();
+			} else if (annotationName.equals("eu.skqs.type.Dynasty")) {
+				tagName = "time";
 			}
 
+			Element element = document.createElement(tagName);
+			Text content = document.createTextNode(annotation.getCoveredText());
+
+			endPosition = annotation.getBegin();
+
+			if (endPosition > startPosition) {
+				Text documentContent = document.createTextNode(
+				    "\n" + documentText.substring(startPosition, endPosition) + "\n");
+				lastElement.appendChild(documentContent);
+			}
+
+			element.appendChild(content);
+			lastElement.appendChild(element);
+
+			startPosition = annotation.getEnd();
 		}
 
-		return result;
+		// Copy the rest
+		Text documentContent = document.createTextNode(
+		    documentText.substring(startPosition, documentText.length()));
+		lastElement.appendChild(documentContent);
+
+		// Transform DOM into XML
+		StringWriter result = new StringWriter();
+		try {
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			DOMSource source = new DOMSource(document);
+			StreamResult xmlresult = new StreamResult(result);
+			transformer.transform(source, xmlresult);
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				result.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return result.toString();
 	}
 }
