@@ -137,6 +137,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		/*
 		 * Zi
 		 */
+		// TODO: add attribute to person who has this name
 		queryString =
 			"PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
 			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +

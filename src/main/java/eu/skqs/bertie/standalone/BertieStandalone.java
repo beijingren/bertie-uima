@@ -51,6 +51,11 @@ import eu.skqs.bertie.annotators.DateTimeAnalysisEngine;
 import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
 import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
+import eu.skqs.type.Div;
+import eu.skqs.type.P;
+import eu.skqs.type.Tei;
+import eu.skqs.type.Body;
+import eu.skqs.type.Text;
 
 
 public class BertieStandalone {
@@ -62,6 +67,9 @@ public class BertieStandalone {
 
 	public String process(String document) throws Exception {
 		logger.log(Level.INFO, "Processing started.");
+
+		int startPosition = 0;
+		int endPosition = document.length();
 
 		// Generate jcas object
 		JCas jcas = null;
@@ -75,6 +83,28 @@ public class BertieStandalone {
 			logger.log(Level.WARNING, "Cas object could not be generated.");
 		}
 
+		// Warp the text fragment into valid TEI
+		Body body = new Body(jcas);
+		body.setBegin(startPosition);
+		body.setEnd(endPosition);
+		body.addToIndexes();
+
+		Text text = new Text(jcas);
+		text.setBegin(startPosition);
+		text.setEnd(endPosition);
+		text.addToIndexes();
+
+		Div div = new Div(jcas);
+		div.setBegin(startPosition);
+		div.setEnd(endPosition);
+		div.addToIndexes();
+
+		P p = new P(jcas);
+		p.setBegin(startPosition);
+		p.setEnd(endPosition);
+		p.addToIndexes();
+
+		// Run engines
 		String result = null;
 
 		AnalysisEngine engine1 = AnalysisEngineFactory
@@ -89,6 +119,7 @@ public class BertieStandalone {
 		AnalysisEngine engine4 = AnalysisEngineFactory
 		    .createEngine(PlaceNameAnalysisEngine.class);
 
+		// Depends on PersName
 		AnalysisEngine engine5 = AnalysisEngineFactory
 		    .createEngine(DateTimeAnalysisEngine.class);
 

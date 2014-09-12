@@ -25,6 +25,8 @@ import java.util.HashMap;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FSIndex;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
@@ -35,19 +37,21 @@ import org.apache.uima.util.Logger;
 import com.google.common.base.Joiner;
 
 import eu.skqs.type.Dynasty;
+import eu.skqs.type.PersName;
 
 
 public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Dynasties
-	private Pattern mDynastiesPattern;
+	private String	mDynastiesBase;
+	private Pattern	mDynastiesPattern;
 	private HashMap<String, String> mDynasties;
 
 	// Temporal markers
-	private Pattern mTemporalPattern = Pattern.compile("以前|以後");
+	private Pattern	mTemporalPattern = Pattern.compile("以前|以後");
 
 	// Logger
-	private Logger logger;
+	private Logger	logger;
 
 	// Annotation
 	private int totalDynasties = 0;
@@ -56,6 +60,8 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 
+		// TODO: only match 2 character phrases
+		// single character phrase only before person names
 		mDynasties = new HashMap<String, String>();
 		mDynasties.put("三國", "XXX");
 		mDynasties.put("隋", "XXX");
@@ -73,7 +79,9 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		mDynasties.put("清", "XXX");
 		mDynasties.put("國朝", "XXX");
 
-		mDynastiesPattern = Pattern.compile(Joiner.on("|").join(mDynasties.keySet()));
+		mDynastiesBase = "(" + Joiner.on("|").join(mDynasties.keySet()) + ")";
+		mDynastiesPattern = Pattern.compile(mDynastiesBase + "(興|以後|以來)");
+
 
 		// Life points
 		// 及冠
@@ -93,18 +101,18 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		int pos = 0;
 
-		// Dynasties
+		// Dynasties expressions
 		Matcher matcher = mDynastiesPattern.matcher(docText);
 		while (matcher.find(pos)) {
 
 			// Found match
-			Dynasty annotation = new Dynasty(aJCas, matcher.start(), matcher.end());
+			Dynasty annotation = new Dynasty(aJCas, matcher.start(1), matcher.end(1));
 
 			annotation.addToIndexes();
 
 			totalDynasties++;
 
-			logger.log(Level.FINEST, "Found: " + annotation);
+			logger.log(Level.WARNING, "Found: " + annotation);
 
 			pos = matcher.end();
 		}
@@ -115,6 +123,13 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		while (matcher.find(pos)) {
 
 			pos = matcher.end();
+		}
+
+		// Dynasty + Person
+		FSIndex personIndex = aJCas.getAnnotationIndex(PersName.type);
+		FSIterator personIterator = personIndex.iterator();
+		while (personIterator.hasNext()) {
+			PersName person = (PersName)personIterator.next();
 		}
 	}
 

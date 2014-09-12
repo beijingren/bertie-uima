@@ -105,10 +105,29 @@ public class TeiCasSerializer {
 				tagName = "placeName";
 			} else if (annotationName.equals("eu.skqs.type.Dynasty")) {
 				tagName = "time";
+			} else if (annotationName.equals("eu.skqs.type.P")) {
+				tagName = "p";
+			} else if (annotationName.equals("eu.skqs.type.Div")) {
+				tagName = "div";
+			} else if (annotationName.equals("eu.skqs.type.Body")) {
+				tagName = "body";
+			} else if (annotationName.equals("eu.skqs.type.Text")) {
+				tagName = "text";
 			}
 
 			Element element = document.createElement(tagName);
-			Text content = document.createTextNode(annotation.getCoveredText());
+
+			if (annotationName.equals("eu.skqs.type.P") |
+			    annotationName.equals("eu.skqs.type.Div") |
+			    annotationName.equals("eu.skqs.type.Body") |
+			    annotationName.equals("eu.skqs.type.Text")) {
+				lastElement.appendChild(element);
+				lastElement = element;
+			} else {
+				Text content = document.createTextNode(annotation.getCoveredText());
+				element.appendChild(content);
+				lastElement.appendChild(element);
+			}
 
 			endPosition = annotation.getBegin();
 
@@ -118,8 +137,6 @@ public class TeiCasSerializer {
 				lastElement.appendChild(documentContent);
 			}
 
-			element.appendChild(content);
-			lastElement.appendChild(element);
 
 			startPosition = annotation.getEnd();
 		}
