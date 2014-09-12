@@ -44,6 +44,7 @@ import org.apache.uima.cas.impl.XCASSerializer;
 import org.xml.sax.SAXException;
 
 import eu.skqs.type.Dynasty;
+import eu.skqs.type.Tei;
 // import eu.skqs.annotators.datetime.DateTimeAnalysisEngine;
 import eu.skqs.bertie.annotators.InterpunctionAnalysisEngine;
 import eu.skqs.bertie.annotators.TeiAnalysisEngine;
@@ -65,6 +66,14 @@ public class TeiCasSerializerTest {
 		JCas aJCas = JCasFactory.createJCas();
 
 		aJCas.setDocumentText(documentText);
+
+		Tei tei = new Tei(aJCas);
+		tei.setBegin(0);
+		tei.setEnd(documentText.length());
+		tei.setTitle("XXX");
+		tei.setTitleEn("XXX");
+		tei.setAuthor("XXX");
+		tei.addToIndexes();
 
 		AnalysisEngine datetimeAE = AnalysisEngineFactory
 		    .createEngine(DateTimeAnalysisEngine.class);

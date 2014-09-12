@@ -38,7 +38,7 @@
 					<rangeTypeName>uima.cas.String</rangeTypeName>
 				</featureDescription>
 				<featureDescription>
-					<name>title_en</name>
+					<name>titleEn</name>
 					<description>Title of this text (english).</description>
 					<rangeTypeName>uima.cas.String</rangeTypeName>
 				</featureDescription>

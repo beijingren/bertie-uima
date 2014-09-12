@@ -27,6 +27,7 @@ import eu.skqs.type.PersName;
 import eu.skqs.type.PlaceName;
 import eu.skqs.type.Text;
 import eu.skqs.type.Title;
+import eu.skqs.type.Tei;
 
 
 public class TeiDeserializer {
@@ -63,6 +64,7 @@ public class TeiDeserializer {
 		private static final String TAG_TEXT = "text";
 		private static final String TAG_TITLE = "title";
 		private static final String TAG_TITLESTMT = "titleStmt";
+		private static final String TAG_TEI = "TEI";
 
 		private boolean captureText = false;
 
@@ -160,6 +162,16 @@ public class TeiDeserializer {
 				title.setEnd(buffer.length());
 
 				title.addToIndexes();
+			} else if (TAG_TEI.equals(qName)) {
+				Tei tei = new Tei(mJCas);
+
+				tei.setBegin(mPositions.get(TAG_TEI));
+				tei.setEnd(buffer.length());
+
+				tei.setTitle("XXX");
+				tei.setTitleEn("XXX");
+				tei.setAuthor("XXX");
+				tei.addToIndexes();
 			}
 		}
 

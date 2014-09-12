@@ -19,6 +19,8 @@
 
 package eu.skqs.bertie.standalone;
 
+import static org.apache.uima.fit.factory.TypeSystemDescriptionFactory.createTypeSystemDescription;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -31,30 +33,31 @@ import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.impl.XCASSerializer;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.JCasFactory;
+import org.apache.uima.fit.factory.TypePrioritiesFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.jcas.JCas;
-
-// TODO
-
-import eu.skqs.bertie.cas.TeiCasSerializer;
-
-import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.fit.factory.AnalysisEngineFactory;
-import eu.skqs.bertie.annotators.InterpunctionAnalysisEngine;
-import org.apache.uima.cas.impl.XCASSerializer;
+import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.resource.metadata.TypePriorities;
+import org.apache.uima.util.CasCreationUtils;
 import org.apache.uima.util.XMLSerializer;
 
 import org.xml.sax.SAXException;
 
 import eu.skqs.bertie.annotators.DateTimeAnalysisEngine;
+import eu.skqs.bertie.annotators.InterpunctionAnalysisEngine;
 import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
 import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
+import eu.skqs.bertie.cas.TeiCasSerializer;
+import eu.skqs.type.Body;
 import eu.skqs.type.Div;
 import eu.skqs.type.P;
 import eu.skqs.type.Tei;
-import eu.skqs.type.Body;
 import eu.skqs.type.Text;
 
 
@@ -73,15 +76,30 @@ public class BertieStandalone {
 
 		// Generate jcas object
 		JCas jcas = null;
+		TypePriorities typePriorities = null;
+		try {
+			typePriorities = TypePrioritiesFactory.createTypePriorities();
+		} catch (ResourceInitializationException e) {
+			e.printStackTrace();
+		}
 
 		try {
-			jcas = JCasFactory.createJCas();
+			CAS cas = CasCreationUtils.createCas(createTypeSystemDescription(), typePriorities, null);
+			jcas = cas.getJCas();
 			jcas.setDocumentText(document);
 			logger.log(Level.FINE, "CAS object generated.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.log(Level.WARNING, "Cas object could not be generated.");
+			logger.log(Level.WARNING, "CAS object could not be generated.");
 		}
+
+		Tei tei = new Tei(jcas);
+		tei.setBegin(startPosition);
+		tei.setEnd(endPosition);
+		tei.setTitle("Analysis Result");
+		tei.setTitleEn("Analysis Result");
+		tei.setAuthor("UIMA bertie 0.0.1");
+		tei.addToIndexes();
 
 		// Warp the text fragment into valid TEI
 		Body body = new Body(jcas);

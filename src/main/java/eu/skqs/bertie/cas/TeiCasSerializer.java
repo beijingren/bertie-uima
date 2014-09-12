@@ -49,6 +49,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
+import eu.skqs.type.Tei;
+
 
 public class TeiCasSerializer {
 
@@ -60,6 +62,10 @@ public class TeiCasSerializer {
 	}
 
 	public static String serialize(JCas aJCas, ContentHandler contentHandler) {
+
+		String[] prioritizedTypeNames = new String[] { "eu.skqs.type.Body",
+		    "eu.skqs.type.Text", "eu.skqs.type.Div", "eu.skqs.type.P" };
+
 		String documentText = aJCas.getDocumentText();
 
 		int startPosition = 0;
@@ -80,11 +86,7 @@ public class TeiCasSerializer {
 		}
 
 		Element lastElement = null;
-		Element rootElement = document.createElement("TEI");
-		rootElement.setAttribute("xmlns", "http://www.tei-c.org/ns/1.0");
-		document.appendChild(rootElement);
-
-		lastElement = rootElement;
+		Element rootElement = null;
 		while (annotationIterator.hasNext()) {
 			Annotation annotation = (Annotation)annotationIterator.next();
 			String annotationName = annotation.getType().getName();
@@ -113,6 +115,66 @@ public class TeiCasSerializer {
 				tagName = "body";
 			} else if (annotationName.equals("eu.skqs.type.Text")) {
 				tagName = "text";
+			} else if (annotationName.equals("eu.skqs.type.Tei")) {
+				Tei tei = (Tei)annotation;
+
+				rootElement = document.createElement("TEI");
+				rootElement.setAttribute("xmlns", "http://www.tei-c.org/ns/1.0");
+				document.appendChild(rootElement);
+
+				Element teiHeader = document.createElement("teiHeader");
+				Element fileDesc = document.createElement("fileDesc");
+				Element titleStmt = document.createElement("titleStmt");
+				Element titleZh = document.createElement("title");
+				Element titleEn = document.createElement("title");
+				Element author = document.createElement("author");
+				Element name = document.createElement("name");
+				Element choice = document.createElement("choice");
+				Element sic = document.createElement("sic");
+				Element publicationStmt = document.createElement("publicationStmt");
+				Element publicationStmtP = document.createElement("p");
+				Element sourceDesc = document.createElement("sourceDesc");
+				Element sourceDescP = document.createElement("p");
+
+				Text titleZhContent = document.createTextNode(tei.getTitle());
+				titleZh.setAttribute("xml:lang", "zh");
+				titleZh.appendChild(titleZhContent);
+
+				Text titleEnContent = document.createTextNode(tei.getTitleEn());
+				titleEn.setAttribute("xml:lang", "en");
+				titleEn.appendChild(titleEnContent);
+
+				Text sicContent = document.createTextNode(tei.getAuthor());
+				sic.appendChild(sicContent);
+
+				choice.appendChild(sic);
+				name.appendChild(choice);
+				author.appendChild(name);
+
+				titleStmt.appendChild(titleZh);
+				titleStmt.appendChild(titleEn);
+				titleStmt.appendChild(author);
+
+				Text publicationStmtPContent = document.createTextNode("XXX");
+				publicationStmtP.appendChild(publicationStmtPContent);
+
+				publicationStmt.appendChild(publicationStmtP);
+
+				Text sourceDescPContent = document.createTextNode("XXX");
+				sourceDescP.appendChild(sourceDescPContent);
+
+				sourceDesc.appendChild(sourceDescP);
+
+				fileDesc.appendChild(titleStmt);
+				fileDesc.appendChild(publicationStmt);
+				fileDesc.appendChild(sourceDesc);
+
+				teiHeader.appendChild(fileDesc);
+
+				rootElement.appendChild(teiHeader);
+
+				lastElement = rootElement;
+				continue;
 			}
 
 			Element element = document.createElement(tagName);
