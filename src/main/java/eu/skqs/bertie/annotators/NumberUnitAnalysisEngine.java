@@ -22,6 +22,7 @@ package eu.skqs.bertie.annotators;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -35,12 +36,14 @@ import org.apache.uima.util.Logger;
 import com.google.common.base.Joiner;
 
 import eu.skqs.type.Num;
+import eu.skqs.type.Measure;
 
 
 public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Interpuction
 	private Pattern mNumeralsPattern;
+	private Pattern mYearMeasurePattern;
 
 	// Logger
 	private Logger logger;
@@ -48,11 +51,32 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 	// Annotation
 	private int totalNumerals = 0;
 
+	private String mNumeralsBase = "([一二三四五六七八九十百]+)";
+
+	private Map<String, Integer> mNumeralsMap;
+
+	// 及冠
+
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
 
-		mNumeralsPattern = Pattern.compile("[一二三四五六七八九十]+");
+		mNumeralsMap = new HashMap<String, Integer>();
+		mNumeralsMap.put("一", 1);
+		mNumeralsMap.put("二", 2);
+		mNumeralsMap.put("三", 3);
+		mNumeralsMap.put("四", 4);
+		mNumeralsMap.put("五", 5);
+		mNumeralsMap.put("六", 6);
+		mNumeralsMap.put("七", 7);
+		mNumeralsMap.put("八", 8);
+		mNumeralsMap.put("九", 9);
+		mNumeralsMap.put("十", 10);
+		mNumeralsMap.put("百", 100);
+
+		mNumeralsPattern = Pattern.compile("[一二三四五六七八九十百]+");
+
+		mYearMeasurePattern = Pattern.compile(mNumeralsBase + "(歲|年)");
 
 		logger = getContext().getLogger();
 	}
@@ -65,17 +89,16 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		int pos = 0;
 
-		// Numerals
-		Matcher matcher = mNumeralsPattern.matcher(docText);
+		// Measures
+		Matcher matcher = mYearMeasurePattern.matcher(docText);
 		while (matcher.find(pos)) {
 
 			// Found match
-			Num annotation = new Num(aJCas, matcher.start(), matcher.end());
+			Measure annotation = new Measure(aJCas, matcher.start(), matcher.end());
 
+			annotation.setQuantity(2);
+			annotation.setUnit("Year");
 			annotation.addToIndexes();
-
-			// value
-			// measure
 
 			totalNumerals++;
 

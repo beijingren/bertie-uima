@@ -210,6 +210,10 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 			pos = matcher.end();
 		}
+
+
+		// 母鄭
+		// father and mother
 	}
 
 	@Override

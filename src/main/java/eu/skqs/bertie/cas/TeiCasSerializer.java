@@ -53,6 +53,7 @@ import eu.skqs.type.Tei;
 
 
 public class TeiCasSerializer {
+	private static final String TYPE_MEASURE = "eu.skqs.type.Measure";
 
 	// TODO
 	public TeiCasSerializer() {
@@ -115,6 +116,8 @@ public class TeiCasSerializer {
 				tagName = "body";
 			} else if (annotationName.equals("eu.skqs.type.Text")) {
 				tagName = "text";
+			} else if (annotationName.equals("eu.skqs.type.Measure")) {
+				tagName = "measure";
 			} else if (annotationName.equals("eu.skqs.type.Tei")) {
 				Tei tei = (Tei)annotation;
 
@@ -188,6 +191,11 @@ public class TeiCasSerializer {
 			startPosition = annotation.getEnd();
 
 			Element element = document.createElement(tagName);
+
+			if (annotationName.equals(TYPE_MEASURE)) {
+				element.setAttribute("quantity", "2");
+				element.setAttribute("unit", "year");
+			}
 
 			if (annotationName.equals("eu.skqs.type.P") |
 			    annotationName.equals("eu.skqs.type.Div") |

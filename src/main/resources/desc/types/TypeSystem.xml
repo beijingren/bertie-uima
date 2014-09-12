@@ -157,6 +157,24 @@
 		</typeDescription>
 
 		<typeDescription>
+			<name>eu.skqs.type.Measure</name>
+			<description>A measure of any unit</description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+				<featureDescription>
+					<name>quantity</name>
+					<description>Value of this measure</description>
+					<rangeTypeName>uima.cas.Integer</rangeTypeName>
+				</featureDescription>
+				<featureDescription>
+					<name>unit</name>
+					<description>Value of this measure</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
 			<name>eu.skqs.type.DateRange</name>
 			<description>Contains a phrase delimiting a time period</description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>

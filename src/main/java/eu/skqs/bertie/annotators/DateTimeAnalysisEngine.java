@@ -44,7 +44,11 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Dynasties
 	private String	mDynastiesBase;
+
+	// Dynasties patterns
 	private Pattern	mDynastiesPattern;
+	private Pattern	mDynastiesPrefixPattern;
+
 	private HashMap<String, String> mDynasties;
 
 	// Temporal markers
@@ -83,6 +87,8 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		mDynastiesPattern = Pattern.compile(mDynastiesBase + "(興|以後|以來)");
 
 
+		mDynastiesPrefixPattern = Pattern.compile(".*" + mDynastiesBase + "$");
+
 		// Life points
 		// 及冠
 
@@ -99,6 +105,7 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		// Get document text
 		String docText = aJCas.getDocumentText();
 
+		int documentLength = docText.length();
 		int pos = 0;
 
 		// Dynasties expressions
@@ -130,6 +137,19 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		FSIterator personIterator = personIndex.iterator();
 		while (personIterator.hasNext()) {
 			PersName person = (PersName)personIterator.next();
+
+			int localBegin = person.getBegin();
+			if (documentLength > localBegin) {
+				// TODO: substring needs only to be 1 or 2 characters
+				matcher = mDynastiesPrefixPattern.matcher(
+				    docText.substring(0, localBegin));
+
+				if (matcher.matches()) {
+					Dynasty dynasty = new Dynasty(aJCas,
+					    matcher.start(1), matcher.end(1));
+					dynasty.addToIndexes();
+				}
+			}
 		}
 	}
 
