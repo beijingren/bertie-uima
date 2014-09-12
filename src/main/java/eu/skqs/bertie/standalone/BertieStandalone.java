@@ -84,7 +84,8 @@ public class BertieStandalone {
 		}
 
 		try {
-			CAS cas = CasCreationUtils.createCas(createTypeSystemDescription(), typePriorities, null);
+			CAS cas = CasCreationUtils.createCas(createTypeSystemDescription(),
+			    typePriorities, null);
 			jcas = cas.getJCas();
 			jcas.setDocumentText(document);
 			logger.log(Level.FINE, "CAS object generated.");

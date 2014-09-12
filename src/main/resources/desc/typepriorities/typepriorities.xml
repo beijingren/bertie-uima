@@ -25,8 +25,8 @@
         <priorityLists>
                 <priorityList>
                         <type>eu.skqs.type.Tei</type>
-                        <type>eu.skqs.type.Body</type>
                         <type>eu.skqs.type.Text</type>
+                        <type>eu.skqs.type.Body</type>
 			<type>eu.skqs.type.Div</type>
 			<type>eu.skqs.type.P</type>
                 </priorityList>

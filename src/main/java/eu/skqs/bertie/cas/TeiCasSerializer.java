@@ -176,6 +176,16 @@ public class TeiCasSerializer {
 				lastElement = rootElement;
 				continue;
 			}
+			endPosition = annotation.getBegin();
+
+			if (endPosition > startPosition) {
+				Text documentContent = document.createTextNode(
+				    "\n" + documentText.substring(startPosition, endPosition) + "\n");
+				lastElement.appendChild(documentContent);
+			}
+
+
+			startPosition = annotation.getEnd();
 
 			Element element = document.createElement(tagName);
 
@@ -191,16 +201,6 @@ public class TeiCasSerializer {
 				lastElement.appendChild(element);
 			}
 
-			endPosition = annotation.getBegin();
-
-			if (endPosition > startPosition) {
-				Text documentContent = document.createTextNode(
-				    "\n" + documentText.substring(startPosition, endPosition) + "\n");
-				lastElement.appendChild(documentContent);
-			}
-
-
-			startPosition = annotation.getEnd();
 		}
 
 		// Copy the rest
