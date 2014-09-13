@@ -31,24 +31,16 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.util.CasToInlineXml;
 
-import org.xml.sax.ContentHandler;
-
 
 public class TeiCasSerializer {
-	private static final String TYPE_MEASURE = "eu.skqs.type.Measure";
-
 	// TODO
 	public TeiCasSerializer() {
 	}
 
-	public TeiCasSerializer(TypeSystem aTypeSystem) {
-	}
-
-	public static String serialize(JCas aJCas, ContentHandler contentHandler) {
+	public static String serialize(JCas aJCas) {
 
 		CasToInlineXml cas2xml = new CasToInlineXml();
 		String document = null;
@@ -68,11 +60,9 @@ public class TeiCasSerializer {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer =
 			    transformerFactory.newTransformer(new StreamSource(xslPath));
-
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
 			StreamResult xmlresult = new StreamResult(result);
-
 			transformer.transform(new StreamSource(casXml), xmlresult);
 		} catch (TransformerException e) {
 			e.printStackTrace();

@@ -52,18 +52,11 @@ public class TeiAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	private void writeTei(JCas aJCas) throws IOException {
 
-		FileOutputStream aStream = null;
-
 		try {
-			aStream = new FileOutputStream("XXX.xml");
-			TeiCasSerializer teiSerializer = new TeiCasSerializer(aJCas.getTypeSystem());
-			XMLSerializer xmlSerializer = new XMLSerializer(aStream, false);
-
-			String result = teiSerializer.serialize(aJCas, xmlSerializer.getContentHandler());
-		} finally {
-			if (aStream != null) {
-				aStream.close();
-			}
+			TeiCasSerializer teiSerializer = new TeiCasSerializer();
+			String result = teiSerializer.serialize(aJCas);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

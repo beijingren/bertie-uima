@@ -145,20 +145,10 @@ public class BertieStandalone {
 
 		SimplePipeline.runPipeline(jcas, engine0, engine1, engine2,
 		    engine3, engine4, engine5);
-
-		XCASSerializer ser = new XCASSerializer(jcas.getTypeSystem());
-		OutputStream outputStream = new ByteArrayOutputStream();
-		XMLSerializer xmlSer = new XMLSerializer(outputStream);
-
 		TeiCasSerializer teiSer = new TeiCasSerializer();
 
-		result = teiSer.serialize(jcas, xmlSer.getContentHandler());
-/*
-		try {
-		} catch (SAXException e) {
-			e.printStackTrace();
-		}
-*/
+		result = teiSer.serialize(jcas);
+
 		return result;
 	}
 
