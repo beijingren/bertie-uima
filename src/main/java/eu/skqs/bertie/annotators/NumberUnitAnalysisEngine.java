@@ -41,9 +41,10 @@ import eu.skqs.type.Measure;
 
 public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 
-	// Interpuction
+	// Measure patterns
 	private Pattern mNumeralsPattern;
 	private Pattern mYearMeasurePattern;
+	private Pattern mFixedTimeExpressionPattern;
 
 	// Logger
 	private Logger logger;
@@ -54,12 +55,15 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 	private String mNumeralsBase = "([一二三四五六七八九十百]+)";
 
 	private Map<String, Integer> mNumeralsMap;
+	private HashMap<String, Integer> mFixedTimeExpression;
 
-	// 及冠
 
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
+
+		mFixedTimeExpression = new HashMap<String, Integer>();
+		mFixedTimeExpression.put("及冠", 20);
 
 		mNumeralsMap = new HashMap<String, Integer>();
 		mNumeralsMap.put("一", 1);
@@ -77,6 +81,9 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 		mNumeralsPattern = Pattern.compile("[一二三四五六七八九十百]+");
 
 		mYearMeasurePattern = Pattern.compile(mNumeralsBase + "(歲|年)");
+
+		mFixedTimeExpressionPattern = Pattern.compile(
+		    Joiner.on("|").join(mFixedTimeExpression.keySet()));
 
 		logger = getContext().getLogger();
 	}
@@ -107,7 +114,17 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 			pos = matcher.end();
 		}
 
-		System.out.println("Num: " + totalNumerals);
+		// Fixed expressions
+		pos = 0;
+		matcher = mFixedTimeExpressionPattern.matcher(docText);
+		while (matcher.find(pos)) {
+			Measure annotation = new Measure(aJCas, matcher.start(), matcher.end());
+			annotation.addToIndexes();
+			System.out.println("Fixed time express");
+
+			pos = matcher.end();
+		}
+
 
 	}
 

@@ -38,6 +38,7 @@ import com.google.common.base.Joiner;
 
 import eu.skqs.type.Dynasty;
 import eu.skqs.type.PersName;
+import eu.skqs.type.Measure;
 
 
 public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
@@ -84,17 +85,13 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		mDynasties.put("國朝", "XXX");
 
 		mDynastiesBase = "(" + Joiner.on("|").join(mDynasties.keySet()) + ")";
+
+
+		// Dynasty + Expression
 		mDynastiesPattern = Pattern.compile(mDynastiesBase + "(興|以後|以來)");
 
-
+		// Dynasty prefix
 		mDynastiesPrefixPattern = Pattern.compile(".*" + mDynastiesBase + "$");
-
-		// Life points
-		// 及冠
-
-		// Time spans
-		// 百年
-		// 四歲
 
 		logger = getContext().getLogger();
 	}
@@ -128,6 +125,7 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		pos = 0;
 		matcher = mTemporalPattern.matcher(docText);
 		while (matcher.find(pos)) {
+
 
 			pos = matcher.end();
 		}

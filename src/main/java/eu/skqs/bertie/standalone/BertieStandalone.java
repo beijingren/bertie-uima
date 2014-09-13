@@ -48,6 +48,7 @@ import org.apache.uima.util.XMLSerializer;
 
 import org.xml.sax.SAXException;
 
+import eu.skqs.bertie.annotators.AuxiliaryAnalysisEngine;
 import eu.skqs.bertie.annotators.DateTimeAnalysisEngine;
 import eu.skqs.bertie.annotators.InterpunctionAnalysisEngine;
 import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
@@ -55,6 +56,7 @@ import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
 import eu.skqs.bertie.cas.TeiCasSerializer;
 import eu.skqs.type.Body;
+import eu.skqs.type.Chapter;
 import eu.skqs.type.Div;
 import eu.skqs.type.P;
 import eu.skqs.type.Tei;
@@ -113,18 +115,17 @@ public class BertieStandalone {
 		text.setEnd(endPosition);
 		text.addToIndexes();
 
-		Div div = new Div(jcas);
-		div.setBegin(startPosition);
-		div.setEnd(endPosition);
-		div.addToIndexes();
-
-		P p = new P(jcas);
-		p.setBegin(startPosition);
-		p.setEnd(endPosition);
-		p.addToIndexes();
+		Chapter chapter = new Chapter(jcas);
+		chapter.setBegin(startPosition);
+		chapter.setEnd(endPosition);
+		chapter.setNumber(1);
+		chapter.addToIndexes();
 
 		// Run engines
 		String result = null;
+
+		AnalysisEngine engine0 = AnalysisEngineFactory
+		    .createEngine(AuxiliaryAnalysisEngine.class);
 
 		AnalysisEngine engine1 = AnalysisEngineFactory
 		    .createEngine(InterpunctionAnalysisEngine.class);
@@ -142,8 +143,8 @@ public class BertieStandalone {
 		AnalysisEngine engine5 = AnalysisEngineFactory
 		    .createEngine(DateTimeAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(jcas, engine1, engine2, engine3,
-		    engine4, engine5);
+		SimplePipeline.runPipeline(jcas, engine0, engine1, engine2,
+		    engine3, engine4, engine5);
 
 		XCASSerializer ser = new XCASSerializer(jcas.getTypeSystem());
 		OutputStream outputStream = new ByteArrayOutputStream();
@@ -158,13 +159,14 @@ public class BertieStandalone {
 			e.printStackTrace();
 		}
 */
-//		System.out.println(outputStream.toString());
-
 		return result;
 	}
 
 	public static void main(String[] args) {
 		String documentPath = null;
+		// TODO: move to initialize
+		String newLine = System.getProperty("line.separator");
+
 
 		// First arg must be the document path for now
 		if (args.length != 1) {
@@ -193,7 +195,7 @@ public class BertieStandalone {
 			String line = null;
 
 			while ((line = fileReader.readLine()) != null) {
-				sb.append(line);
+				sb.append(line + newLine);
 			}
 
 			String input = sb.toString();
