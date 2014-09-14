@@ -166,9 +166,15 @@
 
 		<typeDescription>
 			<name>eu.skqs.type.Num</name>
-			<description>(number) contains a number, written in any form</description>
+			<description>contains a number, written in any form</description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
 			<features>
+				<featureDescription>
+					<name>value</name>
+					<description>Value of this numeral</description>
+					<rangeTypeName>uima.cas.Integer</rangeTypeName>
+				</featureDescription>
+
 			</features>
 		</typeDescription>
 

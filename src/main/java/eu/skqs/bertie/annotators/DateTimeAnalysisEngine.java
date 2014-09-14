@@ -39,16 +39,43 @@ import com.google.common.base.Joiner;
 import eu.skqs.type.Dynasty;
 import eu.skqs.type.PersName;
 import eu.skqs.type.Measure;
+import eu.skqs.type.Date;
+import eu.skqs.type.Num;
+
+// TODO: move sparql code into resource sharing code
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.File;
+import java.util.Vector;
 
 
 public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
+
+	// TODO:
+	// RDF
+	private String rdfFile = "/docker/dublin-store/rdf/sikuquanshu.rdf";
+	private int prefixLength = "http://example.org/owl/sikuquanshu#".length();
 
 	// Dynasties
 	private String	mDynastiesBase;
 
 	// Dynasties patterns
 	private Pattern	mDynastiesPattern;
+	private Pattern	mDynastiesExpressionPattern;
 	private Pattern	mDynastiesPrefixPattern;
+	private Pattern	mSexagenaryCyclePattern;
 
 	private HashMap<String, String> mDynasties;
 
@@ -86,14 +113,61 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		mDynastiesBase = "(" + Joiner.on("|").join(mDynasties.keySet()) + ")";
 
+		mDynastiesPattern = Pattern.compile(mDynastiesBase);
 
 		// Dynasty + Expression
-		mDynastiesPattern = Pattern.compile(mDynastiesBase + "(興|以後|以來)");
+		mDynastiesExpressionPattern = Pattern.compile(mDynastiesBase + "(興|以後|以來)");
 
 		// Dynasty prefix
 		mDynastiesPrefixPattern = Pattern.compile(".*" + mDynastiesBase + "$");
 
+		// 日食
+
 		logger = getContext().getLogger();
+
+		// SPARQL
+		InputStream in = null;
+		try {
+			in = new FileInputStream(new File(rdfFile));
+		} catch (Exception e) {
+			throw new ResourceInitializationException();
+		}
+
+		Model model = ModelFactory.createMemModelMaker().createModel("SKQS");
+		model.read(in, null);
+		try {
+			in.close();
+		} catch (Exception e) {
+		}
+
+		String queryString =
+		    "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
+		    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+		    "SELECT ?s WHERE { ?s rdf:type :SexagenaryCycle . }";
+
+		Query query = QueryFactory.create(queryString);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+
+		Vector sexagenaryCycle = new Vector();
+
+		try {
+			ResultSet rs = qe.execSelect();
+
+			for (; rs.hasNext();) {
+				QuerySolution rb = rs.nextSolution();
+
+				RDFNode x = rb.get("s");
+
+				String cycle = x.toString().substring(prefixLength);
+				System.out.println(cycle);
+				sexagenaryCycle.add(cycle);
+			}
+		} finally {
+			qe.close();
+		}
+
+		mSexagenaryCyclePattern = Pattern.compile(Joiner.on("|").join(sexagenaryCycle));
+
 	}
 
 	@Override
@@ -104,20 +178,27 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		int documentLength = docText.length();
 		int pos = 0;
+		Matcher matcher = null;
+
+		// Sexagenary cycle
+		pos = 0;
+		matcher = mSexagenaryCyclePattern.matcher(docText);
+		while (matcher.find(pos)) {
+			Num annotation = new Num(aJCas, matcher.start(), matcher.end());
+
+			annotation.addToIndexes();
+			pos = matcher.end();
+		}
 
 		// Dynasties expressions
-		Matcher matcher = mDynastiesPattern.matcher(docText);
+		pos = 0;
+		matcher = mDynastiesExpressionPattern.matcher(docText);
 		while (matcher.find(pos)) {
-
-			// Found match
-			Dynasty annotation = new Dynasty(aJCas, matcher.start(1), matcher.end(1));
+			Date annotation = new Date(aJCas, matcher.start(1), matcher.end(1));
 
 			annotation.addToIndexes();
 
 			totalDynasties++;
-
-			logger.log(Level.WARNING, "Found: " + annotation);
-
 			pos = matcher.end();
 		}
 
@@ -137,16 +218,19 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 			PersName person = (PersName)personIterator.next();
 
 			int localBegin = person.getBegin();
-			if (documentLength > localBegin) {
-				// TODO: substring needs only to be 1 or 2 characters
-				matcher = mDynastiesPrefixPattern.matcher(
-				    docText.substring(0, localBegin));
 
-				if (matcher.matches()) {
-					Dynasty dynasty = new Dynasty(aJCas,
-					    matcher.start(1), matcher.end(1));
-					dynasty.addToIndexes();
-				}
+			// Prefix
+			String localPrefix = null;
+			try {
+				localPrefix = docText.substring(localBegin-1, localBegin);
+			} catch (StringIndexOutOfBoundsException e) {
+				continue;
+			}
+
+			matcher = mDynastiesPattern.matcher(localPrefix);
+			if (matcher.matches()) {
+				Date annotation = new Date(aJCas, localBegin-1, localBegin);
+				annotation.addToIndexes();
 			}
 		}
 	}

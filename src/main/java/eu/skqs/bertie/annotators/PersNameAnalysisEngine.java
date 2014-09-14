@@ -60,6 +60,8 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 	// Zi
 	private Pattern mZiPattern;
 
+	private Pattern mMaternalPattern;
+
 	// Logger
 	private Logger logger;
 
@@ -173,6 +175,8 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		}
 
 		mZiPattern = Pattern.compile(Joiner.on("|").join(zis));
+
+		mMaternalPattern = Pattern.compile("(母|姓)(\\p{Alnum}{1,2})氏", Pattern.UNICODE_CHARACTER_CLASS);
 	}
 
 	@Override
@@ -213,7 +217,19 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 
 		// 母鄭
+		// 母杜氏
 		// father and mother
+		pos = 0;
+		matcher = mMaternalPattern.matcher(docText);
+		while (matcher.find(pos)) {
+			PersName annotation = new PersName(aJCas, matcher.start(2), matcher.end(2));
+
+			annotation.addToIndexes();
+
+			totalPersName++;
+
+			pos = matcher.end();
+		}
 	}
 
 	@Override

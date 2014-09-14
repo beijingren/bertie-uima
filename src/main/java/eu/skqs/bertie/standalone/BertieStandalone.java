@@ -202,9 +202,6 @@ public class BertieStandalone {
 			PrintWriter fileWriter = new PrintWriter(documentPath, encodingType);
 			fileWriter.write(output);
 			fileWriter.close();
-
-			// logger.log(Level.INFO, output);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

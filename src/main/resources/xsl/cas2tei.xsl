@@ -93,6 +93,8 @@
 
 <xsl:template match="eu.skqs.type.Measure">
 <measure>
+<xsl:attribute name="quantity"><xsl:value-of select="@quantity" /></xsl:attribute>
+<xsl:attribute name="unit"><xsl:value-of select="@unit" /></xsl:attribute>
 <xsl:apply-templates/>
 </measure>
 </xsl:template>
@@ -101,6 +103,13 @@
 <title>
 <xsl:apply-templates/>
 </title>
+</xsl:template>
+
+<xsl:template match="eu.skqs.type.Num">
+<num>
+<xsl:attribute name="value"><xsl:value-of select="@value" /></xsl:attribute>
+<xsl:apply-templates/>
+</num>
 </xsl:template>
 
 </xsl:stylesheet>
