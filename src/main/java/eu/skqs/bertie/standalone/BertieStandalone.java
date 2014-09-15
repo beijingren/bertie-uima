@@ -73,6 +73,7 @@ public class BertieStandalone {
 	public String process(String document) throws Exception {
 		logger.log(Level.INFO, "Processing started.");
 		logger.log(Level.INFO, document);
+		logger.log(Level.INFO, "歐陽修");
 
 		int startPosition = 0;
 		int endPosition = document.length();
