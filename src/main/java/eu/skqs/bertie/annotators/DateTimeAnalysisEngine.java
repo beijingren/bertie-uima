@@ -22,6 +22,7 @@ package eu.skqs.bertie.annotators;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -41,6 +42,7 @@ import eu.skqs.type.PersName;
 import eu.skqs.type.Measure;
 import eu.skqs.type.Date;
 import eu.skqs.type.Num;
+import eu.skqs.type.Time;
 
 // TODO: move sparql code into resource sharing code
 import com.hp.hpl.jena.query.Query;
@@ -78,9 +80,11 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	private Pattern	mSexagenaryCyclePattern;
 
 	private HashMap<String, String> mDynasties;
+	private Map<String, String> mTimeExpressionsMap;
 
 	// Temporal markers
 	private Pattern	mTemporalPattern = Pattern.compile("以前|以後");
+	private Pattern	mTimeExpressionsPattern;
 
 	// Logger
 	private Logger	logger;
@@ -91,6 +95,11 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	@Override
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		super.initialize(aContext);
+
+		mTimeExpressionsMap = new HashMap<String, String>();
+		mTimeExpressionsMap.put("夜半", "24:00");
+
+		mTimeExpressionsPattern = Pattern.compile("(" + Joiner.on("|").join(mTimeExpressionsMap.keySet()) + ")");
 
 		// TODO: only match 2 character phrases
 		// single character phrase only before person names
@@ -187,6 +196,19 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 			Num annotation = new Num(aJCas, matcher.start(), matcher.end());
 
 			annotation.addToIndexes();
+			pos = matcher.end();
+		}
+
+		// Time expressions
+		pos = 0;
+		matcher = mTimeExpressionsPattern.matcher(docText);
+		while (matcher.find(pos)) {
+			String when = mTimeExpressionsMap.get(matcher.group());
+
+			Time annotation = new Time(aJCas, matcher.start(1), matcher.end(1));
+			annotation.setWhen(when);
+			annotation.addToIndexes();
+
 			pos = matcher.end();
 		}
 

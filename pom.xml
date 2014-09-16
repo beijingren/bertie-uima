@@ -12,7 +12,7 @@
 	<properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	<java.target>1.6</java.target>
+	<java.target>1.7</java.target>
 	</properties>
 
 	<build>

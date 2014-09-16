@@ -81,6 +81,7 @@
 
 <xsl:template match="eu.skqs.type.Time">
 <time>
+<xsl:attribute name="when"><xsl:value-of select="@when" /></xsl:attribute>
 <xsl:apply-templates/>
 </time>
 </xsl:template>
