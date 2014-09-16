@@ -100,6 +100,7 @@ public class TeiDeserializer {
 		private JCas mJCas;
 
 		private Stack mNumStack = new Stack();
+		private Stack mMeasureStack = new Stack();
 		private Stack mTeiStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
@@ -141,14 +142,27 @@ public class TeiDeserializer {
 				mTeiStack.push(annotation);
 			}
 
-
 			if (TAG_NUM.equals(qName)) {
 				Num annotation = new Num(mJCas);
 
 				annotation.setBegin(buffer.length());
-				annotation.setValue(3);
+
+				String value = aAttributes.getValue("value");
+				annotation.setValue(Integer.parseInt(value));
 
 				mNumStack.push(annotation);
+			} else if (TAG_MEASURE.equals(qName)) {
+				Measure annotation = new Measure(mJCas);
+
+				annotation.setBegin(buffer.length());
+
+				String quantity = aAttributes.getValue("quantity");
+				annotation.setQuantity(Integer.parseInt(quantity));
+
+				String unit = aAttributes.getValue("unit");
+				annotation.setUnit(unit);
+
+				mMeasureStack.push(annotation);
 			}
 
 			tagStart = buffer.length();
@@ -226,9 +240,8 @@ public class TeiDeserializer {
 
 				annotation.addToIndexes();
 			} else if (TAG_MEASURE.equals(qName)) {
-				Measure annotation = new Measure(mJCas);
+				Measure annotation = (Measure)mMeasureStack.pop();
 
-				annotation.setBegin(mPositions.get(TAG_MEASURE));
 				annotation.setEnd(buffer.length());
 
 				annotation.addToIndexes();
