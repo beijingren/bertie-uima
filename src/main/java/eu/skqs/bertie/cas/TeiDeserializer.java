@@ -22,6 +22,7 @@ package eu.skqs.cas;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Stack;
 
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -40,12 +41,15 @@ import eu.skqs.type.Body;
 import eu.skqs.type.Date;
 import eu.skqs.type.DateRange;
 import eu.skqs.type.Div;
+import eu.skqs.type.Measure;
+import eu.skqs.type.Num;
 import eu.skqs.type.P;
 import eu.skqs.type.Pc;
 import eu.skqs.type.PersName;
 import eu.skqs.type.PlaceName;
 import eu.skqs.type.Tei;
 import eu.skqs.type.Text;
+import eu.skqs.type.Time;
 import eu.skqs.type.Title;
 
 
@@ -75,19 +79,28 @@ public class TeiDeserializer {
 		private static final String TAG_DATE = "date";
 		private static final String TAG_DATERANGE = "dateRange";
 		private static final String TAG_DIV = "div";
+		private static final String TAG_MEASURE = "measure";
+		private static final String TAG_NUM = "num";
 		private static final String TAG_P = "p";
 		private static final String TAG_PC = "pc";
 		private static final String TAG_PERSNAME = "persName";
 		private static final String TAG_PLACENAME = "placeName";
 		private static final String TAG_SIC = "sic";
+		private static final String TAG_TEI = "TEI";
 		private static final String TAG_TEXT = "text";
 		private static final String TAG_TITLE = "title";
+		private static final String TAG_TIME = "time";
 		private static final String TAG_TITLESTMT = "titleStmt";
-		private static final String TAG_TEI = "TEI";
+		private static final String TAG_TEIHEADER = "teiHeader";
 
 		private boolean captureText = false;
+		private boolean mTitleStmt = false;
+		private boolean mTeiHeader = false;
 
 		private JCas mJCas;
+
+		private Stack mNumStack = new Stack();
+		private Stack mTeiStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
@@ -115,6 +128,29 @@ public class TeiDeserializer {
 				captureText = true;
 			}
 
+			// title tag can occur in titlestmt and in body
+			if (TAG_TITLESTMT.equals(qName)) {
+				mTitleStmt = true;
+			}
+			if (TAG_TEIHEADER.equals(qName)) {
+				mTeiHeader = true;
+				Tei annotation = new Tei(mJCas);
+
+				annotation.setBegin(buffer.length());
+
+				mTeiStack.push(annotation);
+			}
+
+
+			if (TAG_NUM.equals(qName)) {
+				Num annotation = new Num(mJCas);
+
+				annotation.setBegin(buffer.length());
+				annotation.setValue(3);
+
+				mNumStack.push(annotation);
+			}
+
 			tagStart = buffer.length();
 			mPositions.put(qName, buffer.length());
 		}
@@ -131,7 +167,12 @@ public class TeiDeserializer {
 
 				pc.addToIndexes();
 			} else if (TAG_DATE.equals(qName)) {
-				// Date date = new Date(mJCas);
+				Date annotation = new Date(mJCas);
+
+				annotation.setBegin(mPositions.get(TAG_DATE));
+				annotation.setEnd(buffer.length());
+
+				annotation.addToIndexes();
 			} else if (TAG_DATERANGE.equals(qName)) {
 				DateRange dateRange = new DateRange(mJCas);
 
@@ -161,12 +202,15 @@ public class TeiDeserializer {
 
 				div.addToIndexes();
 			} else if (TAG_P.equals(qName)) {
-				P p = new P(mJCas);
+				if (mTeiHeader) {
+				} else {
+					P p = new P(mJCas);
 
-				p.setBegin(mPositions.get(TAG_P));
-				p.setEnd(buffer.length());
+					p.setBegin(mPositions.get(TAG_P));
+					p.setEnd(buffer.length());
 
-				p.addToIndexes();
+					p.addToIndexes();
+				}
 			} else if (TAG_PERSNAME.equals(qName)) {
 				PersName persName = new PersName(mJCas);
 
@@ -174,23 +218,55 @@ public class TeiDeserializer {
 				persName.setEnd(buffer.length());
 
 				persName.addToIndexes();
+			} else if (TAG_PLACENAME.equals(qName)) {
+				PlaceName  annotation = new PlaceName(mJCas);
+
+				annotation.setBegin(mPositions.get(TAG_PLACENAME));
+				annotation.setEnd(buffer.length());
+
+				annotation.addToIndexes();
+			} else if (TAG_MEASURE.equals(qName)) {
+				Measure annotation = new Measure(mJCas);
+
+				annotation.setBegin(mPositions.get(TAG_MEASURE));
+				annotation.setEnd(buffer.length());
+
+				annotation.addToIndexes();
+			} else if (TAG_NUM.equals(qName)) {
+				Num annotation = (Num)mNumStack.pop();
+
+				annotation.setEnd(buffer.length());
+
+				annotation.addToIndexes();
 			} else if (TAG_TITLE.equals(qName)) {
-				Title title = new Title(mJCas);
+				if (mTeiHeader) {
+					Tei tei = (Tei)mTeiStack.peek();
 
-				title.setBegin(mPositions.get(TAG_TITLE));
-				title.setEnd(buffer.length());
+					tei.setTitle("TEST");
+				} else {
+					Title title = new Title(mJCas);
 
-				title.addToIndexes();
+					title.setBegin(mPositions.get(TAG_TITLE));
+					title.setEnd(buffer.length());
+
+					title.addToIndexes();
+				}
 			} else if (TAG_TEI.equals(qName)) {
+				// Tei tei = (Tei)mTeiStack.pop();
 				Tei tei = new Tei(mJCas);
 
 				tei.setBegin(mPositions.get(TAG_TEI));
 				tei.setEnd(buffer.length());
 
+				// TODO
 				tei.setTitle("XXX");
 				tei.setTitleEn("XXX");
 				tei.setAuthor("XXX");
 				tei.addToIndexes();
+			} else if (TAG_TITLESTMT.equals(qName)) {
+				mTitleStmt = false;
+			} else if (TAG_TEIHEADER.equals(qName)) {
+				mTeiHeader = false;
 			}
 		}
 
