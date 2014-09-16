@@ -34,9 +34,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.impl.XCASSerializer;
+import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
+import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.factory.TypePrioritiesFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
@@ -48,6 +51,18 @@ import org.apache.uima.util.XMLSerializer;
 
 import org.xml.sax.SAXException;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.HelpFormatter;
+
+// TODO: rename consumers.TeiConsumer or similar
+import eu.skqs.bertie.annotators.TeiAnalysisEngine;
+
 import eu.skqs.bertie.annotators.AuxiliaryAnalysisEngine;
 import eu.skqs.bertie.annotators.DateTimeAnalysisEngine;
 import eu.skqs.bertie.annotators.InterpunctionAnalysisEngine;
@@ -55,6 +70,8 @@ import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
 import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
 import eu.skqs.bertie.cas.TeiCasSerializer;
+import eu.skqs.bertie.collection.TeiCollectionReader;
+
 import eu.skqs.type.Body;
 import eu.skqs.type.Chapter;
 import eu.skqs.type.Div;
@@ -70,10 +87,26 @@ public class BertieStandalone {
 	public BertieStandalone() {
 	}
 
+	public void processWithCollectionReader(String directory) throws Exception {
+		logger.log(Level.INFO, "Processing with TEI collection reader started.");
+
+		// TEI reader
+		CollectionReaderDescription reader =
+		    CollectionReaderFactory.createReaderDescription(
+		    TeiCollectionReader.class,
+		    TeiCollectionReader.PARAM_INPUTDIR,
+		    directory);
+
+		// TEI serializer
+		AnalysisEngineDescription writer =
+		    AnalysisEngineFactory.createEngineDescription(
+		    TeiAnalysisEngine.class);
+
+		SimplePipeline.runPipeline(reader, writer);
+	}
+
 	public String process(String document) throws Exception {
 		logger.log(Level.INFO, "Processing started.");
-		logger.log(Level.INFO, document);
-		logger.log(Level.INFO, "歐陽修");
 
 		int startPosition = 0;
 		int endPosition = document.length();
@@ -155,17 +188,81 @@ public class BertieStandalone {
 	}
 
 	public static void main(String[] args) {
+
+		// Options
+		Option file = OptionBuilder.withArgName("file")
+				.withLongOpt("file")
+				.hasArg()
+				.withDescription("File to annotate")
+				.create("f");
+
+		Option directory = OptionBuilder.withArgName("directory")
+				.withLongOpt("directory")
+				.hasArg()
+				.withDescription("Directory to annotate")
+				.create("d");
+
+		Option owl = OptionBuilder.withArgName("owl")
+				.withLongOpt("owl")
+				.hasArg()
+				.withDescription("OWL file to use in annotation")
+				.create("o");
+
+		Option plain = OptionBuilder
+				.withLongOpt("plain")
+				.withDescription("Plain text file")
+				.create("p");
+
+		Options options = new Options();
+		options.addOption(file);
+		options.addOption(directory);
+		options.addOption(owl);
+		options.addOption(plain);
+
+		CommandLineParser parser = new GnuParser();
+		HelpFormatter formatter = new HelpFormatter();
+		CommandLine cmdline = null;
+
+		try {
+			cmdline = parser.parse(options, args);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+
+		BertieStandalone standalone = new BertieStandalone();
 		String documentPath = null;
+		Boolean plainText = false;
+
 		// TODO: move to initialize
 		String newLine = System.getProperty("line.separator");
 
+		// Check for directory option
+		if (cmdline.hasOption("directory")) {
+			String directoryPath = cmdline.getOptionValue("directory");
 
-		// First arg must be the document path for now
-		if (args.length != 1) {
-			logger.log(Level.WARNING, "No document path given. Quitting.");
-			System.exit(-1);
+			try {
+				standalone.processWithCollectionReader(directoryPath);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(-1);
+			}
+
+			System.exit(0);
+		}
+
+		// Check for file option
+		if (cmdline.hasOption("file")) {
+			documentPath = cmdline.getOptionValue("file");
 		} else {
-			documentPath = args[0];
+			logger.log(Level.WARNING, "No file argument given. Quitting.");
+			formatter.printHelp("bertie", options);
+			System.exit(-1);
+		}
+
+		// Check for plain option
+		if (cmdline.hasOption("plain")) {
+			plainText = true;
 		}
 
 		// Make sure we have a document path
@@ -193,7 +290,6 @@ public class BertieStandalone {
 			String input = sb.toString();
 			fileReader.close();
 
-			BertieStandalone standalone = new BertieStandalone();
 
 			String output = standalone.process(input);
 			if (output == null) {
