@@ -106,6 +106,7 @@ public class TeiDeserializer {
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
+		private int tokenStart = 0;
 
 		private HashMap<String, Integer> mPositions = new HashMap<String, Integer>();
 
@@ -123,9 +124,14 @@ public class TeiDeserializer {
 		public void startElement(String aUri, String aLocalName, String qName,
 		    Attributes aAttributes) throws SAXException {
 
-			if (TAG_DATE.equals(qName)) {
+			if (TAG_TITLE.equals(qName) && mTeiHeader) {
 				captureText = true;
-				// tokenStart = getBuffer.length();
+				tokenStart = buffer.length();
+			} else if (TAG_AUTHOR.equals(qName) && mTeiHeader) {
+				captureText = true;
+				tokenStart = buffer.length();
+			} else if (TAG_P.equals(qName) && mTeiHeader) {
+				tokenStart = buffer.length();
 			} else if (TAG_PC.equals(qName)) {
 				captureText = true;
 			}
@@ -221,8 +227,16 @@ public class TeiDeserializer {
 				div.setEnd(buffer.length());
 
 				div.addToIndexes();
+			} else if (TAG_AUTHOR.equals(qName)) {
+				if (mTeiHeader) {
+					Tei annotate = (Tei)mTeiStack.peek();
+
+					annotate.setAuthor(buffer.substring(tokenStart, buffer.length()));
+					buffer.delete(tokenStart, buffer.length());
+				}
 			} else if (TAG_P.equals(qName)) {
 				if (mTeiHeader) {
+					buffer.delete(tokenStart, buffer.length());
 				} else {
 					P p = new P(mJCas);
 
@@ -261,7 +275,8 @@ public class TeiDeserializer {
 				if (mTeiHeader) {
 					Tei tei = (Tei)mTeiStack.peek();
 
-					tei.setTitle("TEST");
+					tei.setTitle(buffer.substring(tokenStart, buffer.length()));
+					buffer.delete(tokenStart, buffer.length());
 				} else {
 					Title title = new Title(mJCas);
 
