@@ -102,6 +102,7 @@ public class TeiDeserializer {
 		private Stack mNumStack = new Stack();
 		private Stack mMeasureStack = new Stack();
 		private Stack mTeiStack = new Stack();
+		private Stack mPcStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
@@ -163,6 +164,12 @@ public class TeiDeserializer {
 				annotation.setUnit(unit);
 
 				mMeasureStack.push(annotation);
+			} else if (TAG_PC.equals(qName)) {
+				Pc annotation = new Pc(mJCas);
+
+				annotation.setBegin(buffer.length());
+
+				mPcStack.push(annotation);
 			}
 
 			tagStart = buffer.length();
@@ -174,12 +181,11 @@ public class TeiDeserializer {
 		    throws SAXException {
 
 			if (TAG_PC.equals(qName)) {
-				Pc pc = new Pc(mJCas);
+				Pc annotation = (Pc)mPcStack.pop();
 
-				pc.setBegin(mPositions.get(TAG_PC));
-				pc.setEnd(buffer.length());
+				annotation.setEnd(buffer.length());
 
-				pc.addToIndexes();
+				annotation.addToIndexes();
 			} else if (TAG_DATE.equals(qName)) {
 				Date annotation = new Date(mJCas);
 

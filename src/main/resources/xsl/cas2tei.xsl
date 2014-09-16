@@ -67,6 +67,12 @@
 </pc>
 </xsl:template>
 
+<xsl:template match="eu.skqs.type.Pc">
+<pc>
+<xsl:apply-templates/>
+</pc>
+</xsl:template>
+
 <xsl:template match="eu.skqs.type.PersName">
 <persName>
 <xsl:apply-templates/>
