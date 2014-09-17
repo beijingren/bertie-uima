@@ -69,6 +69,7 @@ import eu.skqs.bertie.annotators.InterpunctionAnalysisEngine;
 import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
 import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
+import eu.skqs.bertie.annotators.DeduplicatorAnalysisEngine;
 import eu.skqs.bertie.cas.TeiCasSerializer;
 import eu.skqs.bertie.collection.TeiCollectionReader;
 
@@ -101,12 +102,17 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    InterpunctionAnalysisEngine.class);
 
+		// Deduplication
+		AnalysisEngineDescription deduplicator =
+		    AnalysisEngineFactory.createEngineDescription(
+		    DeduplicatorAnalysisEngine.class);
+
 		// TEI serializer
 		AnalysisEngineDescription writer =
 		    AnalysisEngineFactory.createEngineDescription(
 		    TeiAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(reader, engine1, writer);
+		SimplePipeline.runPipeline(reader, engine1, deduplicator, writer);
 	}
 
 	public String process(String document) throws Exception {
