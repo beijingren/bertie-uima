@@ -97,6 +97,9 @@ public class BertieStandalone {
 		    TeiCollectionReader.PARAM_INPUTDIR,
 		    directory);
 
+		AnalysisEngine engine1 = AnalysisEngineFactory
+		    .createEngine(InterpunctionAnalysisEngine.class);
+
 		// TEI serializer
 		AnalysisEngineDescription writer =
 		    AnalysisEngineFactory.createEngineDescription(

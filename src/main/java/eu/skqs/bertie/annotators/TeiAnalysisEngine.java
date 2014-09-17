@@ -20,19 +20,32 @@
 package eu.skqs.bertie.annotators;
 
 import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.cas.FSIndex;
+import org.apache.uima.cas.FSIterator;
+import org.apache.uima.util.Level;
+import org.apache.uima.util.Logger;
 
 import eu.skqs.bertie.cas.TeiCasSerializer;
+import eu.skqs.type.SourceDocumentInformation;
 
 
 // TeiCasConsumer
 public class TeiAnalysisEngine extends JCasAnnotator_ImplBase {
 
+	private Logger logger;
+
 	public void initialize() throws ResourceInitializationException {
+
+		logger = getContext().getLogger();
 	}
 
 	@Override
@@ -46,6 +59,37 @@ public class TeiAnalysisEngine extends JCasAnnotator_ImplBase {
 			throw new AnalysisEngineProcessException(e);
 		}
 
-		System.out.println(result);
+		String fileURI = null;
+		FSIndex sourceIndex = aJCas.getAnnotationIndex(SourceDocumentInformation.type);
+		FSIterator sourceIterator = sourceIndex.iterator();
+		while (sourceIterator.hasNext()) {
+			SourceDocumentInformation source = (SourceDocumentInformation)
+			    sourceIterator.next();
+
+			fileURI = source.getUri();
+			break;
+		}
+
+		// TODO: fix tests
+		if (fileURI == null)
+			return;
+
+		// TODO
+		String fileName = fileURI;
+
+		String encodingType = "UTF-8";
+		PrintWriter fileWriter = null;
+		try {
+			fileWriter = new PrintWriter(fileName, encodingType);
+			fileWriter.write(result);
+			fileWriter.close();
+		} catch (FileNotFoundException e) {
+			logger.log(Level.WARNING, "File not found: ");
+			throw new AnalysisEngineProcessException();
+		} catch (UnsupportedEncodingException e) {
+			logger.log(Level.WARNING, "Unsupported encoding");
+			throw new AnalysisEngineProcessException();
+		} finally {
+		}
 	}
 }

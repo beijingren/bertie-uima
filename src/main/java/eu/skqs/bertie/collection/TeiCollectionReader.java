@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.jcas.JCas;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.collection.CollectionReader_ImplBase;
 import org.apache.uima.resource.ResourceConfigurationException;
@@ -36,6 +37,7 @@ import org.apache.uima.util.ProgressImpl;
 import org.xml.sax.SAXException;
 
 import eu.skqs.cas.TeiDeserializer;
+import eu.skqs.type.SourceDocumentInformation;
 
 
 public class TeiCollectionReader extends CollectionReader_ImplBase {
@@ -93,8 +95,20 @@ public class TeiCollectionReader extends CollectionReader_ImplBase {
 	@Override
 	public void getNext(CAS aCAS) throws IOException, CollectionException {
 
+		JCas jcas = null;
+		try {
+			jcas = aCAS.getJCas();
+		} catch (CASException e) {
+			throw new CollectionException();
+		}
+
 		File currentFile = (File) mFiles.get(mCurrentIndex++);
 		FileInputStream inputStream = new FileInputStream(currentFile);
+
+		SourceDocumentInformation annotation = new SourceDocumentInformation(jcas);
+		// TODO
+		annotation.setUri(currentFile.getAbsoluteFile().toString());
+		annotation.addToIndexes();
 
 		try {
 			TeiDeserializer.deserialize(inputStream, aCAS);

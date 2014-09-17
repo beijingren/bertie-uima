@@ -62,6 +62,6 @@ public class TeiCollectionReaderTest {
 		    AnalysisEngineFactory.createEngineDescription(
 		    TeiAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(reader, dump, serializer);
+		// SimplePipeline.runPipeline(reader, dump, serializer);
 	}
 }

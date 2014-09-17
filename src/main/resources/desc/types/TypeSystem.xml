@@ -51,6 +51,19 @@
 		</typeDescription>
 
 		<typeDescription>
+			<name>eu.skqs.type.SourceDocumentInformation</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+				<featureDescription>
+					<name>uri</name>
+					<description>Absolute location of this source.</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
 			<name>eu.skqs.type.Dynasty</name>
 			<description></description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
