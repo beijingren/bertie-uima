@@ -34,7 +34,7 @@ import org.apache.uima.util.Logger;
 
 import com.google.common.base.Joiner;
 
-import eu.skqs.type.Interpunction;
+import eu.skqs.type.Pc;
 
 
 public class InterpunctionAnalysisEngine extends JCasAnnotator_ImplBase {
@@ -70,7 +70,7 @@ public class InterpunctionAnalysisEngine extends JCasAnnotator_ImplBase {
 		while (matcher.find(pos)) {
 
 			// Found match
-			Interpunction annotation = new Interpunction(aJCas, matcher.start(), matcher.end());
+			Pc annotation = new Pc(aJCas, matcher.start(), matcher.end());
 
 			annotation.addToIndexes();
 
