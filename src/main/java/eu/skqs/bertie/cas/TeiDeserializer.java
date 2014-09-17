@@ -97,6 +97,8 @@ public class TeiDeserializer {
 		private boolean mTitleStmt = false;
 		private boolean mTeiHeader = false;
 
+		private String mTitleLang = null;
+
 		private JCas mJCas;
 
 		private Stack mNumStack = new Stack();
@@ -127,6 +129,8 @@ public class TeiDeserializer {
 
 			if (TAG_TITLE.equals(qName) && mTeiHeader) {
 				captureText = true;
+
+				mTitleLang = aAttributes.getValue("xml:lang");
 				tokenStart = buffer.length();
 			} else if (TAG_AUTHOR.equals(qName) && mTeiHeader) {
 				captureText = true;
@@ -291,8 +295,11 @@ public class TeiDeserializer {
 			} else if (TAG_TITLE.equals(qName)) {
 				if (mTeiHeader) {
 					Tei tei = (Tei)mTeiStack.peek();
-
+					if (mTitleLang.equals("zh")) {
 					tei.setTitle(buffer.substring(tokenStart, buffer.length()));
+					} else {
+					tei.setTitleEn(buffer.substring(tokenStart, buffer.length()));
+					}
 					buffer.delete(tokenStart, buffer.length());
 				} else {
 					Title title = new Title(mJCas);
