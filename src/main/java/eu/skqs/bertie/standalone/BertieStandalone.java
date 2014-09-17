@@ -97,15 +97,16 @@ public class BertieStandalone {
 		    TeiCollectionReader.PARAM_INPUTDIR,
 		    directory);
 
-		AnalysisEngine engine1 = AnalysisEngineFactory
-		    .createEngine(InterpunctionAnalysisEngine.class);
+		AnalysisEngineDescription engine1 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    InterpunctionAnalysisEngine.class);
 
 		// TEI serializer
 		AnalysisEngineDescription writer =
 		    AnalysisEngineFactory.createEngineDescription(
 		    TeiAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(reader, writer);
+		SimplePipeline.runPipeline(reader, engine1, writer);
 	}
 
 	public String process(String document) throws Exception {
