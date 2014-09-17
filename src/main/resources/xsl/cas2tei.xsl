@@ -37,11 +37,20 @@
 </TEI>
 </xsl:template>
 
-<xsl:template match="eu.skqs.type.Div">
+<xsl:template match="eu.skqs.type.Div[@teitype='null']">
 <div>
 <xsl:apply-templates/>
 </div>
 </xsl:template>
+
+<xsl:template match="eu.skqs.type.Div[@teitype!='null']">
+<div>
+<xsl:attribute name="type"><xsl:value-of select="@teitype" /></xsl:attribute>
+<xsl:attribute name="n"><xsl:value-of select="@n" /></xsl:attribute>
+<xsl:apply-templates/>
+</div>
+</xsl:template>
+
 
 <xsl:template match="eu.skqs.type.P">
 <p>
