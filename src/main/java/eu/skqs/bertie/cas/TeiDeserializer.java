@@ -103,6 +103,7 @@ public class TeiDeserializer {
 		private Stack mMeasureStack = new Stack();
 		private Stack mTeiStack = new Stack();
 		private Stack mPcStack = new Stack();
+		private Stack mDivStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
@@ -142,6 +143,7 @@ public class TeiDeserializer {
 			}
 			if (TAG_TEIHEADER.equals(qName)) {
 				mTeiHeader = true;
+			} else if (TAG_TEI.equals(qName)) {
 				Tei annotation = new Tei(mJCas);
 
 				annotation.setBegin(buffer.length());
@@ -176,6 +178,22 @@ public class TeiDeserializer {
 				annotation.setBegin(buffer.length());
 
 				mPcStack.push(annotation);
+			} else if (TAG_DIV.equals(qName)) {
+				Div annotation = new Div(mJCas);
+
+				annotation.setBegin(buffer.length());
+
+				String n = aAttributes.getValue("n");
+				if (n != null) {
+					annotation.setN(Integer.parseInt(n));
+				}
+
+				String type = aAttributes.getValue("type");
+				if (type != null) {
+					annotation.setTeitype(type);
+				}
+
+				mDivStack.push(annotation);
 			}
 
 			tagStart = buffer.length();
@@ -221,9 +239,8 @@ public class TeiDeserializer {
 
 				text.addToIndexes();
 			} else if (TAG_DIV.equals(qName)) {
-				Div div = new Div(mJCas);
+				Div div = (Div)mDivStack.pop();
 
-				div.setBegin(mPositions.get(TAG_DIV));
 				div.setEnd(buffer.length());
 
 				div.addToIndexes();
@@ -286,16 +303,10 @@ public class TeiDeserializer {
 					title.addToIndexes();
 				}
 			} else if (TAG_TEI.equals(qName)) {
-				// Tei tei = (Tei)mTeiStack.pop();
-				Tei tei = new Tei(mJCas);
+				Tei tei = (Tei)mTeiStack.pop();
 
-				tei.setBegin(mPositions.get(TAG_TEI));
 				tei.setEnd(buffer.length());
 
-				// TODO
-				tei.setTitle("XXX");
-				tei.setTitleEn("XXX");
-				tei.setAuthor("XXX");
 				tei.addToIndexes();
 			} else if (TAG_TITLESTMT.equals(qName)) {
 				mTitleStmt = false;
