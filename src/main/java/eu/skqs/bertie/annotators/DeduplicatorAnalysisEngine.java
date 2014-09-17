@@ -33,6 +33,7 @@ import org.apache.uima.util.Logger;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.cas.Type;
+import org.apache.uima.UimaContext;
 
 import eu.skqs.type.Text;
 
@@ -43,15 +44,18 @@ public class DeduplicatorAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	private Logger logger;
 
-	private List<Annotation> annotationToRemoveList = new ArrayList<Annotation>();
+	public void initialize(UimaContext context) throws ResourceInitializationException {
+		super.initialize(context);
 
-	public void initialize() throws ResourceInitializationException {
-
-		logger = getContext().getLogger();
+		logger = context.getLogger();
+		logger.log(Level.INFO, "DeduplicatorAnalysisEngine initialize...");
 	}
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		logger.log(Level.INFO, "DeduplicatorAnalysisEngine process...");
+
+		List<Annotation> annotationToRemoveList = new ArrayList<Annotation>();
 
 		AnnotationIndex<Annotation> anAnnotationIndex = jcas.getAnnotationIndex();
 		FSIterator<Annotation> anAnnotationIterator = anAnnotationIndex.iterator();
@@ -59,21 +63,23 @@ public class DeduplicatorAnalysisEngine extends JCasAnnotator_ImplBase {
 		Annotation prevAnnotation;
 		Annotation nextAnnotation;
 
-		prevAnnotation = anAnnotationIterator.next();
-		while (anAnnotationIterator.hasNext()) {
-			nextAnnotation = anAnnotationIterator.next();
+		if (anAnnotationIterator.hasNext()) {
+			prevAnnotation = anAnnotationIterator.next();
+			while (anAnnotationIterator.hasNext()) {
+				nextAnnotation = anAnnotationIterator.next();
 
-			String prevType = prevAnnotation.getType().getName();
-			String nextType = nextAnnotation.getType().getName();
+				String prevType = prevAnnotation.getType().getName();
+				String nextType = nextAnnotation.getType().getName();
 
-			if ((prevAnnotation.getBegin() == nextAnnotation.getBegin()) &&
-			    (prevAnnotation.getEnd() == nextAnnotation.getEnd()) &&
-			    (prevType.equals(nextType))) {
-				annotationToRemoveList.add(nextAnnotation);
+				if ((prevAnnotation.getBegin() == nextAnnotation.getBegin()) &&
+				    (prevAnnotation.getEnd() == nextAnnotation.getEnd()) &&
+				    (prevType.equals(nextType))) {
+					annotationToRemoveList.add(nextAnnotation);
+				}
+
+				prevAnnotation = nextAnnotation;
 			}
-
-			prevAnnotation = nextAnnotation;
-                }
+		}
 
                 for (Annotation remove : annotationToRemoveList) {
                         remove.removeFromIndexes();

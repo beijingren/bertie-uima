@@ -48,6 +48,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.metadata.TypePriorities;
 import org.apache.uima.util.CasCreationUtils;
 import org.apache.uima.util.XMLSerializer;
+import org.apache.uima.fit.component.CasDumpWriter;
 
 import org.xml.sax.SAXException;
 
@@ -101,6 +102,12 @@ public class BertieStandalone {
 		AnalysisEngineDescription engine1 =
 		    AnalysisEngineFactory.createEngineDescription(
 		    InterpunctionAnalysisEngine.class);
+
+		// TODO: DEBUG
+		AnalysisEngineDescription dump =
+		    AnalysisEngineFactory.createEngineDescription(
+		    CasDumpWriter.class,
+		    CasDumpWriter.PARAM_OUTPUT_FILE, "/tmp/uima-dump.txt");
 
 		// Deduplication
 		AnalysisEngineDescription deduplicator =
