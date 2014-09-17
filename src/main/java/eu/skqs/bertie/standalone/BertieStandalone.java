@@ -220,14 +220,20 @@ public class BertieStandalone {
 
 		Option plain = OptionBuilder
 				.withLongOpt("plain")
-				.withDescription("Plain text file")
+				.withDescription("Plain text file format")
 				.create("p");
+
+		Option tei = OptionBuilder
+				.withLongOpt("tei")
+				.withDescription("TEI file format")
+				.create("t");
 
 		Options options = new Options();
 		options.addOption(file);
 		options.addOption(directory);
 		options.addOption(owl);
 		options.addOption(plain);
+		options.addOption(tei);
 
 		CommandLineParser parser = new GnuParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -242,13 +248,19 @@ public class BertieStandalone {
 
 		BertieStandalone standalone = new BertieStandalone();
 		String documentPath = null;
-		Boolean plainText = false;
 
 		// TODO: move to initialize
 		String newLine = System.getProperty("line.separator");
 
 		// Check for directory option
 		if (cmdline.hasOption("directory")) {
+			// We support TEI directorys only
+			if (!cmdline.hasOption("tei")) {
+				logger.log(Level.WARNING,
+				    "TEI file format must be selected with directory argument");
+				System.exit(-1);
+			}
+
 			String directoryPath = cmdline.getOptionValue("directory");
 
 			try {
@@ -263,6 +275,12 @@ public class BertieStandalone {
 
 		// Check for file option
 		if (cmdline.hasOption("file")) {
+			// Check for plain option
+			if (!cmdline.hasOption("plain")) {
+				logger.log(Level.WARNING,
+				    "Plain text format must be selected with file argument");
+				System.exit(-1);
+			}
 			documentPath = cmdline.getOptionValue("file");
 		} else {
 			logger.log(Level.WARNING, "No file argument given. Quitting.");
@@ -270,10 +288,6 @@ public class BertieStandalone {
 			System.exit(-1);
 		}
 
-		// Check for plain option
-		if (cmdline.hasOption("plain")) {
-			plainText = true;
-		}
 
 		// Make sure we have a document path
 		if (documentPath == null) {

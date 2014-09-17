@@ -37,7 +37,7 @@ import org.apache.uima.cas.Type;
 import eu.skqs.type.Text;
 
 /*
- * This code is from UIMA common by Nicolas Hernandez.
+ * Remove duplicate annotations from CAS. Only linear now.
  */
 public class DeduplicatorAnalysisEngine extends JCasAnnotator_ImplBase {
 
@@ -48,57 +48,6 @@ public class DeduplicatorAnalysisEngine extends JCasAnnotator_ImplBase {
 	public void initialize() throws ResourceInitializationException {
 
 		logger = getContext().getLogger();
-	}
-
-	public void removeDuplicateType(JCas aJCas, int subsumingType, int subsumedType) {
-
-AnnotationIndex<Annotation> subsumingAnnotationIndex = aJCas.getAnnotationIndex(subsumingType);
-
-AnnotationIndex<Annotation> subsumedAnnotationIndex = aJCas.getAnnotationIndex(subsumedType);
-
-                FSIterator<Annotation> subsumingAnnotationIterator = subsumingAnnotationIndex.iterator();
-
-                while (subsumingAnnotationIterator.hasNext()) {
-                        Annotation aSubsumingAnnotation = subsumingAnnotationIterator.next();
-                        FSIterator<Annotation> subsumedAnnotationIterator = subsumedAnnotationIndex.subiterator(aSubsumingAnnotation);
-                        while (subsumedAnnotationIterator.hasNext()) {
-                                Annotation aSubsumedAnnotation = subsumedAnnotationIterator.next();
-                               if ((aSubsumingAnnotation.getBegin() == aSubsumedAnnotation.getBegin()) && (aSubsumingAnnotation.getEnd() == aSubsumedAnnotation.getEnd()) ) {
-                                                annotationToRemoveList.add(aSubsumedAnnotation);
-                             }
-                        }
-                }
-
-
-	}
-	public void removeDuplicate(JCas aJCas, String subsumingAnnotation, String subsumedAnnotation) {
-			List<Annotation> annotationToRemoveList = new ArrayList<Annotation>();
-
-                Type subsumingAnnotationType = aJCas.getTypeSystem().getType(subsumingAnnotation);
-                AnnotationIndex<Annotation> subsumingAnnotationIndex = aJCas.getAnnotationIndex(subsumingAnnotationType);
-
-                Type subsumedAnnotationType = aJCas.getTypeSystem().getType(subsumedAnnotation);
-                AnnotationIndex<Annotation> subsumedAnnotationIndex = aJCas.getAnnotationIndex(subsumedAnnotationType);
-
-                FSIterator<Annotation> subsumingAnnotationIterator = subsumingAnnotationIndex.iterator();
-
-                while (subsumingAnnotationIterator.hasNext()) {
-                        Annotation aSubsumingAnnotation = subsumingAnnotationIterator.next();
-                        FSIterator<Annotation> subsumedAnnotationIterator = subsumedAnnotationIndex.subiterator(aSubsumingAnnotation);
-                        while (subsumedAnnotationIterator.hasNext()) {
-                                Annotation aSubsumedAnnotation = subsumedAnnotationIterator.next();
-                               if ((aSubsumingAnnotation.getBegin() == aSubsumedAnnotation.getBegin()) && (aSubsumingAnnotation.getEnd() == aSubsumedAnnotation.getEnd()) ) {
-                                                annotationToRemoveList.add(aSubsumedAnnotation);
-                             }
-                        }
-                }
-
-
-                for (Annotation remove : annotationToRemoveList) {
-                        remove.removeFromIndexes();
-                }
-
-
 	}
 
 	@Override
@@ -124,8 +73,6 @@ AnnotationIndex<Annotation> subsumedAnnotationIndex = aJCas.getAnnotationIndex(s
 			}
 
 			prevAnnotation = nextAnnotation;
-			System.out.println("--- Type: " + prevAnnotation.getType());
-			System.out.println("--- Type text: " + Text.type);
                 }
 
                 for (Annotation remove : annotationToRemoveList) {
