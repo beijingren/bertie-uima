@@ -162,7 +162,6 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 			} finally {
 				matcher = mTimePostfixPattern.matcher(localPostfix);
 				if (matcher.matches()) {
-					System.out.println("MATCH");
 					Measure annotation = new Measure(jcas, localBegin, localEnd+1);
 
 					int quantity = num.getValue();

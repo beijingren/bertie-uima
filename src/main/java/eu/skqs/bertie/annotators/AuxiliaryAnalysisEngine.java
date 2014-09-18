@@ -42,7 +42,7 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		mParagraphPattern = Pattern.compile("(^.*\\S+.*$)+", Pattern.MULTILINE);
 
-		mTitlePattern = Pattern.compile("《(.+)》", Pattern.MULTILINE);
+		mTitlePattern = Pattern.compile("《(.+?)》", Pattern.MULTILINE);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 		pos = 0;
 		matcher = mTitlePattern.matcher(documentText);
 		while (matcher.find(pos)) {
-			Title title = new Title(jcas, matcher.start(), matcher.end());
+			Title title = new Title(jcas, matcher.start(1), matcher.end(1));
 			title.addToIndexes();
 
 			pos = matcher.end();

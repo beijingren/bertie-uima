@@ -34,6 +34,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
+import org.apache.uima.fit.descriptor.ExternalResource;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -50,9 +51,14 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.google.common.base.Joiner;
 
 import eu.skqs.type.PlaceName;
+import eu.skqs.bertie.resources.PlaceNameResource;
 
 
 public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
+	// Shared resources
+	public final static String MODEL_KEY = "PlaceNameResource";
+	@ExternalResource(key = MODEL_KEY)
+	private PlaceNameResource placeNameResource;
 
 	// Interpuction
 	private Pattern mPlaceNamePattern;
@@ -130,6 +136,8 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
+
+		System.out.println(placeNameResource.getUri());
 
 		// Get document text
 		String docText = aJCas.getDocumentText();

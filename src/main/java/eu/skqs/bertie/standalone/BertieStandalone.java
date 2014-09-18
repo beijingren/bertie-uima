@@ -38,6 +38,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.impl.XCASSerializer;
 import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.fit.component.CasDumpWriter;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.factory.JCasFactory;
@@ -48,7 +49,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.metadata.TypePriorities;
 import org.apache.uima.util.CasCreationUtils;
 import org.apache.uima.util.XMLSerializer;
-import org.apache.uima.fit.component.CasDumpWriter;
+import static org.apache.uima.fit.factory.ExternalResourceFactory.bindResource;
 
 import org.xml.sax.SAXException;
 
@@ -73,6 +74,7 @@ import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
 import eu.skqs.bertie.annotators.DeduplicatorAnalysisEngine;
 import eu.skqs.bertie.cas.TeiCasSerializer;
 import eu.skqs.bertie.collection.TeiCollectionReader;
+import eu.skqs.bertie.resources.PlaceNameResource;
 
 import eu.skqs.type.Body;
 import eu.skqs.type.Chapter;
@@ -115,6 +117,12 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    DateTimeAnalysisEngine.class);
 
+		AnalysisEngineDescription engine5 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    PlaceNameAnalysisEngine.class);
+
+		bindResource(engine5, PlaceNameAnalysisEngine.MODEL_KEY, PlaceNameResource.class, "TESTTESTTEST");
+
 		// TODO: DEBUG
 		AnalysisEngineDescription dump =
 		    AnalysisEngineFactory.createEngineDescription(
@@ -131,7 +139,7 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    TeiAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(reader, engine1, engine2, engine3, engine4, deduplicator, writer);
+		SimplePipeline.runPipeline(reader, engine1, engine2, engine3, engine4, engine5, deduplicator, writer);
 	}
 
 	public String process(String document) throws Exception {
