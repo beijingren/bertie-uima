@@ -37,6 +37,7 @@ import org.apache.uima.UimaContext;
 
 import eu.skqs.type.Text;
 
+
 /*
  * Remove duplicate annotations from CAS. Only linear now.
  */

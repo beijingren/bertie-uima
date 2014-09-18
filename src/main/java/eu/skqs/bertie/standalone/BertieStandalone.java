@@ -103,6 +103,18 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    InterpunctionAnalysisEngine.class);
 
+		AnalysisEngineDescription engine2 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    NumberUnitAnalysisEngine.class);
+
+		AnalysisEngineDescription engine3 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    PersNameAnalysisEngine.class);
+
+		AnalysisEngineDescription engine4 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    DateTimeAnalysisEngine.class);
+
 		// TODO: DEBUG
 		AnalysisEngineDescription dump =
 		    AnalysisEngineFactory.createEngineDescription(
@@ -119,7 +131,7 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    TeiAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(reader, engine1, deduplicator, writer);
+		SimplePipeline.runPipeline(reader, engine1, engine2, engine3, engine4, deduplicator, writer);
 	}
 
 	public String process(String document) throws Exception {

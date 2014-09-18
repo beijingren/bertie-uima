@@ -61,6 +61,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 	private Pattern mZiPattern;
 
 	private Pattern mMaternalPattern;
+	private Pattern mEditorPattern;
 
 	// Logger
 	private Logger logger;
@@ -177,6 +178,9 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		mZiPattern = Pattern.compile(Joiner.on("|").join(zis));
 
 		mMaternalPattern = Pattern.compile("(母|姓)(\\p{Alnum}{1,2})氏", Pattern.UNICODE_CHARACTER_CLASS);
+
+		// Found in the zongmu
+		mEditorPattern = Pattern.compile("(元|明)(\\p{Alnum}{2,3})撰", Pattern.UNICODE_CHARACTER_CLASS);
 	}
 
 	@Override
@@ -221,6 +225,19 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		// father and mother
 		pos = 0;
 		matcher = mMaternalPattern.matcher(docText);
+		while (matcher.find(pos)) {
+			PersName annotation = new PersName(aJCas, matcher.start(2), matcher.end(2));
+
+			annotation.addToIndexes();
+
+			totalPersName++;
+
+			pos = matcher.end();
+		}
+
+		// Editor
+		pos = 0;
+		matcher = mEditorPattern.matcher(docText);
 		while (matcher.find(pos)) {
 			PersName annotation = new PersName(aJCas, matcher.start(2), matcher.end(2));
 

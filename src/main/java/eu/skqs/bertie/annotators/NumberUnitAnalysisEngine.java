@@ -92,6 +92,7 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 		mTimePostfixMap.put("日", "day");
 		mTimePostfixMap.put("月", "month");
 		mTimePostfixMap.put("州", "prefecture");
+		mTimePostfixMap.put("卷", "chapter");
 
 		mTimePostfixPattern = Pattern.compile("(" + Joiner.on("|").join(mTimePostfixMap.keySet()) + ")", Pattern.UNICODE_CHARACTER_CLASS);
 

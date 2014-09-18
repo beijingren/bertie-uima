@@ -110,6 +110,7 @@ public class TeiCollectionReader extends CollectionReader_ImplBase {
 		annotation.setUri(currentFile.getAbsoluteFile().toString());
 		annotation.addToIndexes();
 
+		System.out.println(currentFile.getAbsoluteFile().toString());
 		try {
 			TeiDeserializer.deserialize(inputStream, aCAS);
 		} catch (SAXException e) {
