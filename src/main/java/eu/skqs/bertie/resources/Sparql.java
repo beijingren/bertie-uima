@@ -21,9 +21,13 @@ package eu.skqs.bertie.resources;
 
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.File;
 
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.UIMAFramework;
+import org.apache.uima.util.Level;
+import org.apache.uima.util.Logger;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -40,22 +44,36 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class Sparql {
 
+	private static Logger logger = UIMAFramework.getLogger();
+
 	public static ResultSet loadQuery(String rdfFile, String queryString) throws ResourceInitializationException {
+		// Logger logger = UIMAFramework.getLogger();
 
 		// Read RDF file
 		InputStream in = null;
 		try {
 			in = new FileInputStream(new File(rdfFile));
 		} catch (Exception e) {
+			System.out.println("~~~");
+			logger.log(Level.WARNING, "Can not open file: " + rdfFile);
 			throw new ResourceInitializationException();
+		}
+
+		System.out.println("++++ " +rdfFile);
+		try {
+			System.out.println(new FileReader(new File(rdfFile)).read());
+		} catch (Exception e) {
 		}
 
 		Model model = ModelFactory.createMemModelMaker().createModel("SKQS");
 		model.read(in, null);
 
+
 		try {
 			in.close();
 		} catch (Exception e) {
+			System.out.println("~~~");
+			logger.log(Level.WARNING, "Can not close input stream " + rdfFile);
 			// TODO
 		}
 

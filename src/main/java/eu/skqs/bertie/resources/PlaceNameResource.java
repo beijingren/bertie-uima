@@ -40,23 +40,25 @@ public class PlaceNameResource implements SharedResourceObject {
 
 	private int prefixLength = "http://example.org/owl/sikuquanshu#".length();
 
-	private String rdfFile = "/docker/dublin-store/rdf/sikuquanshu.rdf";
+	// private String rdfFile = "/docker/dublin-store/rdf/sikuquanshu.rdf";
 	private String placeNameQuery =
 	    "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
 	    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-	    "SELECT ?s WHERE { ?s rdf:type :Xian . }";
+	    "SELECT ?s WHERE { ?s rdf:type :Place . }";
 
 	public void load(DataResource data) throws ResourceInitializationException {
-		uri = data.getUri().toString();
+		String rdfFile = data.getUri().toString();
 
 		ResultSet rs = null;
 		try {
 			rs = Sparql.loadQuery(rdfFile, placeNameQuery);
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println("EXCEPTION!!!!");
 		}
 
 		System.out.println("+++");
+		System.out.println(rdfFile);
 
 
 		for (; rs.hasNext(); ) {
@@ -76,8 +78,6 @@ public class PlaceNameResource implements SharedResourceObject {
 			if (placeName.length() > 1) {
 				mPlaceNames.add(placeName);
 			}
-
-			System.out.println(placeName);
 		}
 	}
 

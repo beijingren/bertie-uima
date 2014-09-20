@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -87,6 +87,7 @@ import eu.skqs.type.Text;
 public class BertieStandalone {
 
 	private static Logger logger = Logger.getLogger("BertieStandalone");
+	private static String owlPath = "/docker/dublin-store/rdf/sikuquanshu.rdf";
 
 	public BertieStandalone() {
 	}
@@ -100,6 +101,10 @@ public class BertieStandalone {
 		    TeiCollectionReader.class,
 		    TeiCollectionReader.PARAM_INPUTDIR,
 		    directory);
+
+		AnalysisEngineDescription engine0 =
+ 		    AnalysisEngineFactory.createEngineDescription(
+		    AuxiliaryAnalysisEngine.class);
 
 		AnalysisEngineDescription engine1 =
 		    AnalysisEngineFactory.createEngineDescription(
@@ -121,9 +126,11 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    PlaceNameAnalysisEngine.class);
 
-		bindResource(engine5, PlaceNameAnalysisEngine.MODEL_KEY, PlaceNameResource.class, "TESTTESTTEST");
+		// Shared resource
+		bindResource(engine5, PlaceNameAnalysisEngine.MODEL_KEY,
+		    PlaceNameResource.class, owlPath);
 
-		// TODO: DEBUG
+		// DEBUG
 		AnalysisEngineDescription dump =
 		    AnalysisEngineFactory.createEngineDescription(
 		    CasDumpWriter.class,
@@ -139,7 +146,7 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    TeiAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(reader, engine1, engine2, engine3, engine4, engine5, deduplicator, writer);
+		SimplePipeline.runPipeline(reader, engine0, engine1, engine2, engine3, engine4, engine5, deduplicator, writer);
 	}
 
 	public String process(String document) throws Exception {
@@ -278,6 +285,11 @@ public class BertieStandalone {
 
 		// TODO: move to initialize
 		String newLine = System.getProperty("line.separator");
+
+		// Check for custom OWL
+		if (cmdline.hasOption("owl")) {
+			owlPath = cmdline.getOptionValue("owl");
+		}
 
 		// Check for directory option
 		if (cmdline.hasOption("directory")) {
