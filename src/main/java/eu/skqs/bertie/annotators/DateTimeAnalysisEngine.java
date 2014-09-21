@@ -227,7 +227,17 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		matcher = mDynastiesExpressionPattern.matcher(docText);
 		while (matcher.find(pos)) {
 			Date annotation = new Date(aJCas, matcher.start(1), matcher.end(1));
+			annotation.addToIndexes();
 
+			totalDynasties++;
+			pos = matcher.end();
+		}
+
+		// Dynasties with two characters
+		pos = 0;
+		matcher = mTwoCharacterDynastiesPattern.matcher(docText);
+		while (matcher.find(pos)) {
+			Date annotation = new Date(aJCas, matcher.start(1), matcher.end(1));
 			annotation.addToIndexes();
 
 			totalDynasties++;

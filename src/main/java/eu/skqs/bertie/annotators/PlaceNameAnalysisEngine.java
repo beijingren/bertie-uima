@@ -64,20 +64,17 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		// Get place names from shared resource
 		mPlaceNamePattern = Pattern.compile(Joiner.on("|").join(
 		    placeNameResource.getPlaceNames()));
-
-		System.out.println("+++" + placeNameResource.getPlaceNames());
 	}
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
-
 		logger.log(Level.INFO, "PlaceNameAnalysisEngine process...");
 
 		// Get document text
 		String docText = aJCas.getDocumentText();
 
-		Matcher matcher = null;
 		int pos = 0;
+		Matcher matcher = null;
 
 		// Annotate place names
 		pos = 0;

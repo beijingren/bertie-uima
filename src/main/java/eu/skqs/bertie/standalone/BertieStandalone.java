@@ -146,8 +146,7 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    TeiAnalysisEngine.class);
 
-		logger.log(Level.INFO, "Standalone runPipeline");
-		SimplePipeline.runPipeline(reader, engine0, engine1, engine2, engine3, engine4, engine5, dump, deduplicator, writer);
+		SimplePipeline.runPipeline(reader, engine0, engine1, engine2, engine3, engine4, engine5, deduplicator, writer);
 	}
 
 	public String process(String document) throws Exception {
@@ -204,24 +203,33 @@ public class BertieStandalone {
 		// Run engines
 		String result = null;
 
-		AnalysisEngine engine0 = AnalysisEngineFactory
-		    .createEngine(AuxiliaryAnalysisEngine.class);
+		AnalysisEngineDescription engine0 =
+ 		    AnalysisEngineFactory.createEngineDescription(
+		    AuxiliaryAnalysisEngine.class);
 
-		AnalysisEngine engine1 = AnalysisEngineFactory
-		    .createEngine(InterpunctionAnalysisEngine.class);
+		AnalysisEngineDescription engine1 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    InterpunctionAnalysisEngine.class);
 
-		AnalysisEngine engine2 = AnalysisEngineFactory
-		    .createEngine(NumberUnitAnalysisEngine.class);
+		AnalysisEngineDescription engine2 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    NumberUnitAnalysisEngine.class);
 
-		AnalysisEngine engine3 = AnalysisEngineFactory
-		    .createEngine(PersNameAnalysisEngine.class);
+		AnalysisEngineDescription engine3 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    PersNameAnalysisEngine.class);
 
-		AnalysisEngine engine4 = AnalysisEngineFactory
-		    .createEngine(PlaceNameAnalysisEngine.class);
+		AnalysisEngineDescription engine4 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    DateTimeAnalysisEngine.class);
 
-		// Depends on PersName
-		AnalysisEngine engine5 = AnalysisEngineFactory
-		    .createEngine(DateTimeAnalysisEngine.class);
+		AnalysisEngineDescription engine5 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    PlaceNameAnalysisEngine.class);
+
+		// Shared resource
+		bindResource(engine5, PlaceNameAnalysisEngine.MODEL_KEY,
+		    PlaceNameResource.class, owlPath);
 
 		SimplePipeline.runPipeline(jcas, engine0, engine1, engine2,
 		    engine3, engine4, engine5);
