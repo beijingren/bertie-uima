@@ -34,8 +34,8 @@ import eu.skqs.bertie.resources.Sparql;
 
 
 public class PlaceNameResource implements SharedResourceObject {
-	private String uri;
 	private String mPlaceNamePattern;
+
 	private Vector mPlaceNames = new Vector();
 
 	private int prefixLength = "http://example.org/owl/sikuquanshu#".length();
@@ -44,7 +44,11 @@ public class PlaceNameResource implements SharedResourceObject {
 	private String placeNameQuery =
 	    "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
 	    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-	    "SELECT ?s WHERE { ?s rdf:type :Place . }";
+	    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+	    "SELECT DISTINCT ?subject WHERE {\n" +
+	    "    ?class rdfs:subClassOf* :Place  .\n" +
+	    "    ?subject rdf:type ?class .\n" +
+	    "}";
 
 	public void load(DataResource data) throws ResourceInitializationException {
 		String rdfFile = data.getUri().toString();
@@ -57,14 +61,11 @@ public class PlaceNameResource implements SharedResourceObject {
 			System.out.println("EXCEPTION!!!!");
 		}
 
-		System.out.println("+++");
-		System.out.println(rdfFile);
-
 
 		for (; rs.hasNext(); ) {
 			QuerySolution rb = rs.nextSolution();
 
-			RDFNode x = rb.get("s");
+			RDFNode x = rb.get("subject");
 
 			if (x.isLiteral()) {
 				Literal subjectStr = (Literal)x;
@@ -81,6 +82,5 @@ public class PlaceNameResource implements SharedResourceObject {
 		}
 	}
 
-	public String getUri() { return uri; }
 	public Vector getPlaceNames() { return mPlaceNames; }
 }

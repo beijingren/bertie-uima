@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.jcas.JCas;
@@ -43,13 +44,17 @@ public class TeiAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	private Logger logger;
 
-	public void initialize() throws ResourceInitializationException {
+	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {
 
-		logger = getContext().getLogger();
+		logger = uimaContext.getLogger();
+		logger.log(Level.INFO, "TeiAnalysisEngine initialize...");
 	}
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
+
+		logger.log(Level.INFO, "TeiAnalysisEngine initialize...");
+
 		String result = null;
 
 		try {

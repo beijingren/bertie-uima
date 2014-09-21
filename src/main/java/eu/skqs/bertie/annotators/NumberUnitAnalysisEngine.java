@@ -63,8 +63,11 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 
 
 	@Override
-	public void initialize(UimaContext aContext) throws ResourceInitializationException {
-		super.initialize(aContext);
+	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {
+		super.initialize(uimaContext);
+
+		logger = uimaContext.getLogger();
+		logger.log(Level.INFO, "NumberUnitAnalysisEngine initialize...");
 
 		mFixedTimeExpression = new HashMap<String, Integer>();
 		mFixedTimeExpression.put("及冠", 20);
@@ -100,17 +103,18 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		mFixedTimeExpressionPattern = Pattern.compile(
 		    Joiner.on("|").join(mFixedTimeExpression.keySet()));
-
-		logger = getContext().getLogger();
 	}
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 
+		logger.log(Level.INFO, "NumberUnitAnalysisEngine process...");
+
 		String docText = jcas.getDocumentText();
 		int documentLength = docText.length();
-		Matcher matcher = null;
+
 		int pos = 0;
+		Matcher matcher = null;
 
 		// Numerals
 		pos = 0;

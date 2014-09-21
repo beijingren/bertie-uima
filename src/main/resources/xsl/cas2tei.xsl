@@ -121,6 +121,12 @@
 </title>
 </xsl:template>
 
+<xsl:template match="eu.skqs.type.Quote">
+<quote>
+<xsl:apply-templates/>
+</quote>
+</xsl:template>
+
 <xsl:template match="eu.skqs.type.Num">
 <num>
 <xsl:attribute name="value"><xsl:value-of select="@value" /></xsl:attribute>

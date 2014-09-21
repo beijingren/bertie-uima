@@ -74,11 +74,12 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 	private int prefixLength = "http://example.org/owl/sikuquanshu#".length();
 
 	@Override
-	public void initialize(UimaContext aContext) throws ResourceInitializationException {
-		super.initialize(aContext);
+	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {
+		super.initialize(uimaContext);
 
 		// Logger
-		logger = getContext().getLogger();
+		logger = uimaContext.getLogger();
+		logger.log(Level.INFO, "PersNameAnalysisEngine initialize...");
 
 		// SPARQL
 		InputStream in = null;
@@ -185,6 +186,8 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
+
+		logger.log(Level.INFO, "PersNameAnalysisEngine process...");
 
 		// Get document text
 		String docText = aJCas.getDocumentText();

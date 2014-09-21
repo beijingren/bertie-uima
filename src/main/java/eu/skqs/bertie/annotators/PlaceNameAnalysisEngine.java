@@ -54,19 +54,24 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 	private int totalPlaceNames = 0;
 
 	@Override
-	public void initialize(UimaContext aContext) throws ResourceInitializationException {
-		super.initialize(aContext);
+	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {
+		super.initialize(uimaContext);
 
 		// Logger
-		logger = getContext().getLogger();
+		logger = uimaContext.getLogger();
+		logger.log(Level.INFO, "PlaceNameAnalysisEngine initialize...");
 
 		// Get place names from shared resource
 		mPlaceNamePattern = Pattern.compile(Joiner.on("|").join(
 		    placeNameResource.getPlaceNames()));
+
+		System.out.println("+++" + placeNameResource.getPlaceNames());
 	}
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
+
+		logger.log(Level.INFO, "PlaceNameAnalysisEngine process...");
 
 		// Get document text
 		String docText = aJCas.getDocumentText();

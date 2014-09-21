@@ -25,28 +25,41 @@ import java.util.regex.Pattern;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
-import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.util.Level;
+import org.apache.uima.util.Logger;
 
 import eu.skqs.type.Div;
 import eu.skqs.type.P;
 import eu.skqs.type.Title;
+import eu.skqs.type.Quote;
 
 
 public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
+
+	private Logger logger;
+
 	private Pattern mParagraphPattern;
 	private Pattern mTitlePattern;
+	private Pattern mQuotePattern;
 
 	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {
 		super.initialize(uimaContext);
 
+		logger = uimaContext.getLogger();
+		logger.log(Level.INFO, "AuxiliaryAnalysisEngine initialize...");
+
 		mParagraphPattern = Pattern.compile("(^.*\\S+.*$)+", Pattern.MULTILINE);
 
 		mTitlePattern = Pattern.compile("《(.+?)》", Pattern.MULTILINE);
+		mQuotePattern = Pattern.compile("「(.+?)」", Pattern.MULTILINE);
 	}
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		logger.log(Level.INFO, "AuxiliaryAnalysisEngine process...");
+
 		String documentText = jcas.getDocumentText();
 
 		// Paragraphs
@@ -69,6 +82,16 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 		while (matcher.find(pos)) {
 			Title title = new Title(jcas, matcher.start(1), matcher.end(1));
 			title.addToIndexes();
+
+			pos = matcher.end();
+		}
+
+		// Quotes
+		pos = 0;
+		matcher = mQuotePattern.matcher(documentText);
+		while (matcher.find(pos)) {
+			Quote annotation = new Quote(jcas, matcher.start(1), matcher.end(1));
+			annotation.addToIndexes();
 
 			pos = matcher.end();
 		}

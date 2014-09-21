@@ -49,16 +49,19 @@ public class InterpunctionAnalysisEngine extends JCasAnnotator_ImplBase {
 	private int totalInterpunction = 0;
 
 	@Override
-	public void initialize(UimaContext aContext) throws ResourceInitializationException {
-		super.initialize(aContext);
+	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {
+		super.initialize(uimaContext);
+
+		logger = uimaContext.getLogger();
+		logger.log(Level.INFO, "InterpunctionAnalysisEngine initialize...");
 
 		mInterpunctionPattern = Pattern.compile("，|。|！|、|“|”|「|」|：|？|《|》|•|（|）");
-
-		logger = getContext().getLogger();
 	}
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
+
+		logger.log(Level.INFO, "InterpunctionAnalysisEngine process...");
 
 		// Get document text
 		String docText = aJCas.getDocumentText();

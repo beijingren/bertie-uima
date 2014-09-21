@@ -72,12 +72,14 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Dynasties
 	private String	mDynastiesBase;
+	private String	mTwoCharacterDynasties;
 
 	// Dynasties patterns
 	private Pattern	mDynastiesPattern;
 	private Pattern	mDynastiesExpressionPattern;
 	private Pattern	mDynastiesPrefixPattern;
 	private Pattern	mSexagenaryCyclePattern;
+	private Pattern	mTwoCharacterDynastiesPattern;
 
 	private HashMap<String, String> mDynasties;
 	private Map<String, String> mTimeExpressionsMap;
@@ -93,8 +95,11 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	private int totalDynasties = 0;
 
 	@Override
-	public void initialize(UimaContext aContext) throws ResourceInitializationException {
-		super.initialize(aContext);
+	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {
+		super.initialize(uimaContext);
+
+		logger = uimaContext.getLogger();
+		logger.log(Level.INFO, "DateTimeAnalysisEngine initialize...");
 
 		mTimeExpressionsMap = new HashMap<String, String>();
 		mTimeExpressionsMap.put("夜半", "24:00");
@@ -113,6 +118,8 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		mDynasties.put("南唐", "XXX");
 		mDynasties.put("吳越", "XXX");
 		mDynasties.put("宋", "XXX");
+		mDynasties.put("南宋", "XXX");
+// Bei song
 		mDynasties.put("遼", "XXX");
 		mDynasties.put("金", "XXX");
 		mDynasties.put("元", "XXX");
@@ -121,8 +128,10 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		mDynasties.put("國朝", "XXX");
 
 		mDynastiesBase = "(" + Joiner.on("|").join(mDynasties.keySet()) + ")";
+		mTwoCharacterDynasties = "(三國|五代|後蜀|南唐|吳越|南宋|國朝)";
 
 		mDynastiesPattern = Pattern.compile(mDynastiesBase);
+		mTwoCharacterDynastiesPattern = Pattern.compile(mTwoCharacterDynasties);
 
 		// Dynasty + Expression
 		mDynastiesExpressionPattern = Pattern.compile(mDynastiesBase + "(興|以後|以來)");
@@ -132,7 +141,6 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// 日食
 
-		logger = getContext().getLogger();
 
 		// SPARQL
 		InputStream in = null;
@@ -181,6 +189,8 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
+
+		logger.log(Level.INFO, "DateTimeAnalysisEngine process...");
 
 		// Get document text
 		String docText = aJCas.getDocumentText();

@@ -51,6 +51,7 @@ import eu.skqs.type.Tei;
 import eu.skqs.type.Text;
 import eu.skqs.type.Time;
 import eu.skqs.type.Title;
+import eu.skqs.type.Quote;
 
 
 public class TeiDeserializer {
@@ -92,6 +93,7 @@ public class TeiDeserializer {
 		private static final String TAG_TIME = "time";
 		private static final String TAG_TITLESTMT = "titleStmt";
 		private static final String TAG_TEIHEADER = "teiHeader";
+		private static final String TAG_QUOTE = "quote";
 
 		private boolean captureText = false;
 		private boolean mTitleStmt = false;
@@ -106,6 +108,7 @@ public class TeiDeserializer {
 		private Stack mTeiStack = new Stack();
 		private Stack mPcStack = new Stack();
 		private Stack mDivStack = new Stack();
+		private Stack mQuoteStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
@@ -198,6 +201,12 @@ public class TeiDeserializer {
 				}
 
 				mDivStack.push(annotation);
+			} else if (TAG_QUOTE.equals(qName)) {
+				Quote annotation = new Quote(mJCas);
+
+				annotation.setBegin(buffer.length());
+
+				mQuoteStack.push(annotation);
 			}
 
 			tagStart = buffer.length();
@@ -319,6 +328,11 @@ public class TeiDeserializer {
 				mTitleStmt = false;
 			} else if (TAG_TEIHEADER.equals(qName)) {
 				mTeiHeader = false;
+			} else if (TAG_QUOTE.equals(qName)) {
+				Quote annotation = (Quote)mQuoteStack.pop();
+
+				annotation.setEnd(buffer.length());
+				annotation.addToIndexes();
 			}
 		}
 

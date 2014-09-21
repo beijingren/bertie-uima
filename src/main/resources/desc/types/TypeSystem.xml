@@ -185,6 +185,14 @@
 		</typeDescription>
 
 		<typeDescription>
+			<name>eu.skqs.type.Quote</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
 			<name>eu.skqs.type.Num</name>
 			<description>contains a number, written in any form</description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
