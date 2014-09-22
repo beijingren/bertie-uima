@@ -197,7 +197,7 @@ public class BertieStandalone {
 		Chapter chapter = new Chapter(jcas);
 		chapter.setBegin(startPosition);
 		chapter.setEnd(endPosition);
-		chapter.setNumber(1);
+		chapter.setN(1);
 		chapter.addToIndexes();
 
 		// Run engines

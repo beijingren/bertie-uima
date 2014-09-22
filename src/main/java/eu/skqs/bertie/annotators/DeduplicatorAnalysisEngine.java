@@ -35,8 +35,6 @@ import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.cas.Type;
 import org.apache.uima.UimaContext;
 
-import eu.skqs.type.Text;
-
 
 /*
  * Remove duplicate annotations from CAS. Only linear now.
@@ -55,6 +53,7 @@ public class DeduplicatorAnalysisEngine extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		logger.log(Level.INFO, "DeduplicatorAnalysisEngine process...");
+
 
 		List<Annotation> annotationToRemoveList = new ArrayList<Annotation>();
 
@@ -87,3 +86,6 @@ public class DeduplicatorAnalysisEngine extends JCasAnnotator_ImplBase {
                 }
 	}
 }
+
+// Maybe we need this some day? Dont dedup annotation with different attributes.
+// String divType = jcas.getTypeSystem().getType(Div.class.getName()).getName();
