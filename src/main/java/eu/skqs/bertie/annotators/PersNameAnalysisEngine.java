@@ -30,6 +30,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
+import org.apache.uima.fit.descriptor.ExternalResource;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
@@ -49,10 +50,19 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 
 import com.google.common.base.Joiner;
 
+import eu.skqs.bertie.resources.PersNameResource;
 import eu.skqs.type.PersName;
 
 
 public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
+
+	// Logger
+	private Logger logger;
+
+	// Shared resources
+	public final static String MODEL_KEY = "PersNameResource";
+	@ExternalResource(key = MODEL_KEY)
+	private PersNameResource persNameResource;
 
 	// Person names
 	private Pattern mPersNamePattern;
@@ -63,10 +73,8 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 	private Pattern mMaternalPattern;
 	private Pattern mEditorPattern;
 
-	// Logger
-	private Logger logger;
 
-	// Annotation
+	// Annotation counter
 	private int totalPersName = 0;
 
 	// RDF
@@ -80,6 +88,10 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		// Logger
 		logger = uimaContext.getLogger();
 		logger.log(Level.INFO, "PersNameAnalysisEngine initialize...");
+
+		// Get person names from shared resource
+		mPersNamePattern = Pattern.compile(Joiner.on("|").join(
+		    persNameResource.getPersNames()));
 
 		// SPARQL
 		InputStream in = null;
@@ -136,7 +148,6 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 			qe.close();
 		}
 
-		mPersNamePattern = Pattern.compile(Joiner.on("|").join(namedIndividuals));
 
 		/*
 		 * Zi

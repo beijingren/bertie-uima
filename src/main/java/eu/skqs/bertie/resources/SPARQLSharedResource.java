@@ -33,24 +33,28 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import eu.skqs.bertie.resources.Sparql;
 
 
-public final class PersNameResource implements SharedResourceObject {
+public final class SPARQLSharedResource implements SharedResourceObject {
 
-	private Vector mPersNames = new Vector();
+	private Vector mTerms = new Vector();
 
 	// TODO: remove this already in SPARQL
 	private int prefixLength = "http://example.org/owl/sikuquanshu#".length();
 
-	String persNameQuery =
+	String termQuery =
 	    "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
 	    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-	    "SELECT ?subject WHERE { ?subject rdf:type :Person . }";
+	    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+	    "SELECT DISTINCT ?subject WHERE {\n" +
+	    "    ?class rdfs:subClassOf* :Term .\n" +
+	    "    ?subject rdf:type ?class .\n" +
+	    "}";
 
 	public void load(DataResource data) throws ResourceInitializationException {
 		String rdfFile = data.getUri().toString();
 
 		ResultSet rs = null;
 		try {
-			rs = Sparql.loadQuery(rdfFile, persNameQuery);
+			rs = Sparql.loadQuery(rdfFile, termQuery);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -65,13 +69,13 @@ public final class PersNameResource implements SharedResourceObject {
 			} else {
 			}
 
-			String persName = x.toString().substring(prefixLength);
+			String term = x.toString().substring(prefixLength);
 
-			if (persName.length() > 1) {
-				mPersNames.add(persName);
+			if (term.length() > 1) {
+				mTerms.add(term);
 			}
 		}
 	}
 
-	public Vector getPersNames() { return mPersNames; }
+	public Vector getTerms() { return mTerms; }
 }

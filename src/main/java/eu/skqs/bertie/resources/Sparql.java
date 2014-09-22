@@ -47,14 +47,12 @@ public class Sparql {
 	private static Logger logger = UIMAFramework.getLogger();
 
 	public static ResultSet loadQuery(String rdfFile, String queryString) throws ResourceInitializationException {
-		// Logger logger = UIMAFramework.getLogger();
 
 		// Read RDF file
 		InputStream in = null;
 		try {
 			in = new FileInputStream(new File(rdfFile));
 		} catch (Exception e) {
-			System.out.println("~~~");
 			logger.log(Level.WARNING, "Can not open file: " + rdfFile);
 			throw new ResourceInitializationException();
 		}
@@ -68,11 +66,9 @@ public class Sparql {
 		Model model = ModelFactory.createMemModelMaker().createModel("SKQS");
 		model.read(in, null);
 
-
 		try {
 			in.close();
 		} catch (Exception e) {
-			System.out.println("~~~");
 			logger.log(Level.WARNING, "Can not close input stream " + rdfFile);
 			// TODO
 		}

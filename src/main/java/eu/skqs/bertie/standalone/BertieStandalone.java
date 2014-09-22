@@ -75,6 +75,8 @@ import eu.skqs.bertie.annotators.DeduplicatorAnalysisEngine;
 import eu.skqs.bertie.cas.TeiCasSerializer;
 import eu.skqs.bertie.collection.TeiCollectionReader;
 import eu.skqs.bertie.resources.PlaceNameResource;
+import eu.skqs.bertie.resources.PersNameResource;
+import eu.skqs.bertie.resources.SPARQLSharedResource;
 
 import eu.skqs.type.Body;
 import eu.skqs.type.Chapter;
@@ -106,6 +108,10 @@ public class BertieStandalone {
  		    AnalysisEngineFactory.createEngineDescription(
 		    AuxiliaryAnalysisEngine.class);
 
+		// Shared resource
+		bindResource(engine0, AuxiliaryAnalysisEngine.MODEL_KEY,
+		    SPARQLSharedResource.class, owlPath);
+
 		AnalysisEngineDescription engine1 =
 		    AnalysisEngineFactory.createEngineDescription(
 		    InterpunctionAnalysisEngine.class);
@@ -117,6 +123,10 @@ public class BertieStandalone {
 		AnalysisEngineDescription engine3 =
 		    AnalysisEngineFactory.createEngineDescription(
 		    PersNameAnalysisEngine.class);
+
+		// Shared resource
+		bindResource(engine3, PersNameAnalysisEngine.MODEL_KEY,
+		    PersNameResource.class, owlPath);
 
 		AnalysisEngineDescription engine4 =
 		    AnalysisEngineFactory.createEngineDescription(
@@ -207,6 +217,10 @@ public class BertieStandalone {
  		    AnalysisEngineFactory.createEngineDescription(
 		    AuxiliaryAnalysisEngine.class);
 
+		// Shared resource
+		bindResource(engine0, AuxiliaryAnalysisEngine.MODEL_KEY,
+		    SPARQLSharedResource.class, owlPath);
+
 		AnalysisEngineDescription engine1 =
 		    AnalysisEngineFactory.createEngineDescription(
 		    InterpunctionAnalysisEngine.class);
@@ -218,6 +232,10 @@ public class BertieStandalone {
 		AnalysisEngineDescription engine3 =
 		    AnalysisEngineFactory.createEngineDescription(
 		    PersNameAnalysisEngine.class);
+
+		// Shared resource
+		bindResource(engine3, PersNameAnalysisEngine.MODEL_KEY,
+		    PersNameResource.class, owlPath);
 
 		AnalysisEngineDescription engine4 =
 		    AnalysisEngineFactory.createEngineDescription(

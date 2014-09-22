@@ -47,11 +47,12 @@ import eu.skqs.type.P;
 import eu.skqs.type.Pc;
 import eu.skqs.type.PersName;
 import eu.skqs.type.PlaceName;
+import eu.skqs.type.Quote;
 import eu.skqs.type.Tei;
+import eu.skqs.type.Term;
 import eu.skqs.type.Text;
 import eu.skqs.type.Time;
 import eu.skqs.type.Title;
-import eu.skqs.type.Quote;
 
 
 public class TeiDeserializer {
@@ -86,14 +87,15 @@ public class TeiDeserializer {
 		private static final String TAG_PC = "pc";
 		private static final String TAG_PERSNAME = "persName";
 		private static final String TAG_PLACENAME = "placeName";
+		private static final String TAG_QUOTE = "quote";
 		private static final String TAG_SIC = "sic";
 		private static final String TAG_TEI = "TEI";
-		private static final String TAG_TEXT = "text";
-		private static final String TAG_TITLE = "title";
-		private static final String TAG_TIME = "time";
-		private static final String TAG_TITLESTMT = "titleStmt";
 		private static final String TAG_TEIHEADER = "teiHeader";
-		private static final String TAG_QUOTE = "quote";
+		private static final String TAG_TERM = "term";
+		private static final String TAG_TEXT = "text";
+		private static final String TAG_TIME = "time";
+		private static final String TAG_TITLE = "title";
+		private static final String TAG_TITLESTMT = "titleStmt";
 
 		private boolean captureText = false;
 		private boolean mTitleStmt = false;
@@ -109,6 +111,7 @@ public class TeiDeserializer {
 		private Stack mPcStack = new Stack();
 		private Stack mDivStack = new Stack();
 		private Stack mQuoteStack = new Stack();
+		private Stack mTermStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
@@ -129,6 +132,8 @@ public class TeiDeserializer {
 		@Override
 		public void startElement(String aUri, String aLocalName, String qName,
 		    Attributes aAttributes) throws SAXException {
+
+			// TODO: Speed up by right order, pc first
 
 			if (TAG_TITLE.equals(qName) && mTeiHeader) {
 				captureText = true;
@@ -207,6 +212,11 @@ public class TeiDeserializer {
 				annotation.setBegin(buffer.length());
 
 				mQuoteStack.push(annotation);
+			} else if (TAG_TERM.equals(qName)) {
+				Term annotation = new Term(mJCas);
+				annotation.setBegin(buffer.length());
+
+				mTermStack.push(annotation);
 			}
 
 			tagStart = buffer.length();
@@ -330,6 +340,11 @@ public class TeiDeserializer {
 				mTeiHeader = false;
 			} else if (TAG_QUOTE.equals(qName)) {
 				Quote annotation = (Quote)mQuoteStack.pop();
+
+				annotation.setEnd(buffer.length());
+				annotation.addToIndexes();
+			} else if (TAG_TERM.equals(qName)) {
+				Term annotation = (Term)mTermStack.pop();
 
 				annotation.setEnd(buffer.length());
 				annotation.addToIndexes();

@@ -94,6 +94,12 @@
 </placeName>
 </xsl:template>
 
+<xsl:template match="eu.skqs.type.Term">
+<term>
+<xsl:apply-templates/>
+</term>
+</xsl:template>
+
 <xsl:template match="eu.skqs.type.Time">
 <time>
 <xsl:attribute name="when"><xsl:value-of select="@when" /></xsl:attribute>
