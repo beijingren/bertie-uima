@@ -132,6 +132,10 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    DateTimeAnalysisEngine.class);
 
+		// Shared resource
+		bindResource(engine4, DateTimeAnalysisEngine.MODEL_KEY,
+		    SPARQLSharedResource.class, owlPath);
+
 		AnalysisEngineDescription engine5 =
 		    AnalysisEngineFactory.createEngineDescription(
 		    PlaceNameAnalysisEngine.class);
@@ -203,12 +207,20 @@ public class BertieStandalone {
 		text.setBegin(startPosition);
 		text.setEnd(endPosition);
 		text.addToIndexes();
-
+/*
 		Chapter chapter = new Chapter(jcas);
 		chapter.setBegin(startPosition);
 		chapter.setEnd(endPosition);
 		chapter.setN(1);
 		chapter.addToIndexes();
+*/
+
+		Div div = new Div(jcas);
+		div.setBegin(startPosition);
+		div.setEnd(endPosition);
+		div.setN(1);
+		div.setTeitype("chapter");
+		div.addToIndexes();
 
 		// Run engines
 		String result = null;
@@ -240,6 +252,10 @@ public class BertieStandalone {
 		AnalysisEngineDescription engine4 =
 		    AnalysisEngineFactory.createEngineDescription(
 		    DateTimeAnalysisEngine.class);
+
+		// Shared resource
+		bindResource(engine4, DateTimeAnalysisEngine.MODEL_KEY,
+		    SPARQLSharedResource.class, owlPath);
 
 		AnalysisEngineDescription engine5 =
 		    AnalysisEngineFactory.createEngineDescription(

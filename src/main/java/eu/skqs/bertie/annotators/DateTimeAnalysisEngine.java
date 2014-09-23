@@ -30,6 +30,7 @@ import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
+import org.apache.uima.fit.descriptor.ExternalResource;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
@@ -37,6 +38,7 @@ import org.apache.uima.util.Logger;
 
 import com.google.common.base.Joiner;
 
+import eu.skqs.bertie.resources.SPARQLSharedResource;
 import eu.skqs.type.Dynasty;
 import eu.skqs.type.PersName;
 import eu.skqs.type.Measure;
@@ -65,6 +67,14 @@ import java.util.Vector;
 
 public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
+	// Logger
+	private Logger logger;
+
+	// Shared resources
+	public final static String MODEL_KEY = "SPARQLSharedResource";
+	@ExternalResource(key = MODEL_KEY)
+	private SPARQLSharedResource sparqlSharedResource;
+
 	// TODO:
 	// RDF
 	private String rdfFile = "/docker/dublin-store/rdf/sikuquanshu.rdf";
@@ -83,13 +93,11 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	private HashMap<String, String> mDynasties;
 	private Map<String, String> mTimeExpressionsMap;
+	private Map<String, Integer> mSexagenaryCycleMap;
 
 	// Temporal markers
 	private Pattern	mTemporalPattern = Pattern.compile("以前|以後");
 	private Pattern	mTimeExpressionsPattern;
-
-	// Logger
-	private Logger	logger;
 
 	// Annotation
 	private int totalDynasties = 0;
@@ -141,50 +149,9 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// 日食
 
-
-		// SPARQL
-		InputStream in = null;
-		try {
-			in = new FileInputStream(new File(rdfFile));
-		} catch (Exception e) {
-			throw new ResourceInitializationException();
-		}
-
-		Model model = ModelFactory.createMemModelMaker().createModel("SKQS");
-		model.read(in, null);
-		try {
-			in.close();
-		} catch (Exception e) {
-		}
-
-		String queryString =
-		    "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
-		    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-		    "SELECT ?s WHERE { ?s rdf:type :SexagenaryCycle . }";
-
-		Query query = QueryFactory.create(queryString);
-		QueryExecution qe = QueryExecutionFactory.create(query, model);
-
-		Vector sexagenaryCycle = new Vector();
-
-		try {
-			ResultSet rs = qe.execSelect();
-
-			for (; rs.hasNext();) {
-				QuerySolution rb = rs.nextSolution();
-
-				RDFNode x = rb.get("s");
-
-				String cycle = x.toString().substring(prefixLength);
-				System.out.println(cycle);
-				sexagenaryCycle.add(cycle);
-			}
-		} finally {
-			qe.close();
-		}
-
-		mSexagenaryCyclePattern = Pattern.compile(Joiner.on("|").join(sexagenaryCycle));
-
+		mSexagenaryCycleMap = SPARQLSharedResource.getSexagenaryCycles();
+		mSexagenaryCyclePattern = Pattern.compile(Joiner.on("|").join(
+		     mSexagenaryCycleMap.keySet()));
 	}
 
 	@Override
@@ -205,7 +172,10 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		while (matcher.find(pos)) {
 			Num annotation = new Num(aJCas, matcher.start(), matcher.end());
 
+			int value = mSexagenaryCycleMap.get(matcher.group());
+			annotation.setValue(value);	
 			annotation.addToIndexes();
+
 			pos = matcher.end();
 		}
 

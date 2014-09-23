@@ -133,8 +133,8 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 					result = result + val;
 				} else {
 					// 十 , 斬首萬餘
-					if (val >= 10 && result == 0) {
-						result = val;
+					if (val >= 10) {
+						result = result + val;
 					} else {
 						result = result * val;
 					}

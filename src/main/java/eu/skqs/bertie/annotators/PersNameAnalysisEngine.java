@@ -93,73 +93,33 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		mPersNamePattern = Pattern.compile(Joiner.on("|").join(
 		    persNameResource.getPersNames()));
 
-		// SPARQL
+		/*
+		 * Zi
+		 */
+		// TODO: add attribute to person who has this name
+		String queryString =
+			"PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
+			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+			"SELECT ?zi WHERE { ?s :zi ?zi . }";
+
+
 		InputStream in = null;
 		try {
 			in = new FileInputStream(new File(rdfFile));
 		} catch (Exception e) {
-			logger.log(Level.WARNING, "Could not find: " +
-			     rdfFile);
 			throw new ResourceInitializationException();
 		}
 
 		Model model = ModelFactory.createMemModelMaker().createModel("SKQS");
 		model.read(in, null);
+
 		try {
 			in.close();
 		} catch (Exception e) {
 		}
 
-		// TODO: remove prefix : from results with bind
-		String queryString =
-			"PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
-			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-			"SELECT ?s WHERE { ?s rdf:type :Person . }";
-
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
-
-		Vector namedIndividuals = new Vector();
-
-		try {
-			ResultSet rs = qe.execSelect();
-
-			for (; rs.hasNext();) {
-				QuerySolution rb = rs.nextSolution();
-
-				RDFNode x = rb.get("s");
-				if (x.isLiteral()) {
-					Literal subjectStr = (Literal)x;
-				} else {
-				}
-
-				String individual = x.toString().substring(prefixLength);
-
-				// Single character names are in general too common,
-				// skip them for now
-				if (individual.length() > 1) {
-					namedIndividuals.add(individual);
-				}
-			}
-
-			// ResultSetFormatter.out(System.out, rs, query);
-
-		} finally {
-			qe.close();
-		}
-
-
-		/*
-		 * Zi
-		 */
-		// TODO: add attribute to person who has this name
-		queryString =
-			"PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
-			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-			"SELECT ?zi WHERE { ?s :zi ?zi . }";
-
-		query = QueryFactory.create(queryString);
-		qe = QueryExecutionFactory.create(query, model);
 
 		Vector zis = new Vector();
 

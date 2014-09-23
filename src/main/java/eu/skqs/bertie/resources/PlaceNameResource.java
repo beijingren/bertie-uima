@@ -40,7 +40,6 @@ public class PlaceNameResource implements SharedResourceObject {
 
 	private int prefixLength = "http://example.org/owl/sikuquanshu#".length();
 
-	// private String rdfFile = "/docker/dublin-store/rdf/sikuquanshu.rdf";
 	private String placeNameQuery =
 	    "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
 	    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +

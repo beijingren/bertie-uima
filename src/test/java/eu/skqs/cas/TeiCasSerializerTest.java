@@ -75,8 +75,8 @@ public class TeiCasSerializerTest {
 		tei.setAuthor("XXX");
 		tei.addToIndexes();
 
-		AnalysisEngine datetimeAE = AnalysisEngineFactory
-		    .createEngine(DateTimeAnalysisEngine.class);
+//		AnalysisEngine datetimeAE = AnalysisEngineFactory
+//		    .createEngine(DateTimeAnalysisEngine.class);
 
 		AnalysisEngine interpunctionAE = AnalysisEngineFactory
 		    .createEngine(InterpunctionAnalysisEngine.class);
@@ -84,7 +84,7 @@ public class TeiCasSerializerTest {
 		AnalysisEngine teiAE = AnalysisEngineFactory
 		    .createEngine(TeiAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(aJCas, datetimeAE, interpunctionAE, teiAE);
+		SimplePipeline.runPipeline(aJCas, interpunctionAE, teiAE);
 
 		XCASSerializer ser = new XCASSerializer(aJCas.getTypeSystem());
 		OutputStream outputStream = new FileOutputStream("/tmp/xcas");

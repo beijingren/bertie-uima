@@ -29,6 +29,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+
+import org.apache.uima.fit.pipeline.SimplePipeline;
+import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.JCasFactory;
@@ -36,7 +39,9 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.test.junit_extension.JUnitExtension;
 import org.apache.uima.util.FileUtils;
+import static org.apache.uima.fit.factory.ExternalResourceFactory.bindResource;
 
+import eu.skqs.bertie.resources.SPARQLSharedResource;
 import eu.skqs.type.Dynasty;
 
 
@@ -58,10 +63,17 @@ public class DateTimeAnnotatorTest {
 
 		aJCas.setDocumentText(documentText);
 
-		AnalysisEngine datetimeAnnotatorAE = AnalysisEngineFactory
-		    .createEngine(DateTimeAnalysisEngine.class);
+		AnalysisEngineDescription engine0 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    DateTimeAnalysisEngine.class);
 
-		datetimeAnnotatorAE.process(aJCas);
+		String owlPath = "/docker/dublin-store/rdf/sikuquanshu.rdf";
+
+		// Shared resource
+		bindResource(engine0, DateTimeAnalysisEngine.MODEL_KEY,
+		    SPARQLSharedResource.class, owlPath);
+
+		SimplePipeline.runPipeline(aJCas, engine0);
 
 		// assertEquals(1, JCasUtil.select(aJCas, Dynasty.class).size());
 	}
