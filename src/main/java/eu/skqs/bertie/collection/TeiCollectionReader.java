@@ -31,6 +31,8 @@ import org.apache.uima.collection.CollectionException;
 import org.apache.uima.collection.CollectionReader_ImplBase;
 import org.apache.uima.resource.ResourceConfigurationException;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.util.Level;
+import org.apache.uima.util.Logger;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
 
@@ -41,6 +43,10 @@ import eu.skqs.type.SourceDocumentInformation;
 
 
 public class TeiCollectionReader extends CollectionReader_ImplBase {
+
+	// Logger
+	private Logger logger;
+
 	/**
 	 * Name of configuration parameter that must be set to the path of a directory containing input
 	 * files.
@@ -54,6 +60,8 @@ public class TeiCollectionReader extends CollectionReader_ImplBase {
 	@Override
 	public void initialize() throws ResourceInitializationException {
 		super.initialize();
+
+		logger = getUimaContext().getLogger();
 
 		File directory = new File(((String) getConfigParameterValue(PARAM_INPUTDIR)).trim());
 
@@ -110,7 +118,7 @@ public class TeiCollectionReader extends CollectionReader_ImplBase {
 		annotation.setUri(currentFile.getAbsoluteFile().toString());
 		annotation.addToIndexes();
 
-		System.out.println(currentFile.getAbsoluteFile().toString());
+		logger.log(Level.INFO, currentFile.getAbsoluteFile().toString());
 
 		try {
 			TeiDeserializer.deserialize(inputStream, aCAS);

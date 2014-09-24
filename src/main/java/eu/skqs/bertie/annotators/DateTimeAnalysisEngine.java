@@ -107,7 +107,7 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		super.initialize(uimaContext);
 
 		logger = uimaContext.getLogger();
-		logger.log(Level.INFO, "DateTimeAnalysisEngine initialize...");
+		logger.log(Level.FINE, "DateTimeAnalysisEngine initialize...");
 
 		mTimeExpressionsMap = new HashMap<String, String>();
 		mTimeExpressionsMap.put("夜半", "24:00");
@@ -157,7 +157,7 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
 
-		logger.log(Level.INFO, "DateTimeAnalysisEngine process...");
+		logger.log(Level.FINE, "DateTimeAnalysisEngine process...");
 
 		// Get document text
 		String docText = aJCas.getDocumentText();
@@ -253,6 +253,6 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
-		System.out.println("Total dynasties: " + totalDynasties);
+		logger.log(Level.FINE, "Total dynasties: " + totalDynasties);
 	}
 }

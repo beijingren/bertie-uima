@@ -61,7 +61,7 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 		super.initialize(uimaContext);
 
 		logger = uimaContext.getLogger();
-		logger.log(Level.INFO, "AuxiliaryAnalysisEngine initialize...");
+		logger.log(Level.FINE, "AuxiliaryAnalysisEngine initialize...");
 
 		// Shared SPARQL resource
 		mTermPattern = Pattern.compile("(" + Joiner.on("|").join(
@@ -75,7 +75,7 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		logger.log(Level.INFO, "AuxiliaryAnalysisEngine process...");
+		logger.log(Level.FINE, "AuxiliaryAnalysisEngine process...");
 
 		String documentText = jcas.getDocumentText();
 

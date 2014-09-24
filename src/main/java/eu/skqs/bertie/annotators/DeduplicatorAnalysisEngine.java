@@ -47,12 +47,12 @@ public class DeduplicatorAnalysisEngine extends JCasAnnotator_ImplBase {
 		super.initialize(context);
 
 		logger = context.getLogger();
-		logger.log(Level.INFO, "DeduplicatorAnalysisEngine initialize...");
+		logger.log(Level.FINE, "DeduplicatorAnalysisEngine initialize...");
 	}
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		logger.log(Level.INFO, "DeduplicatorAnalysisEngine process...");
+		logger.log(Level.FINE, "DeduplicatorAnalysisEngine process...");
 
 
 		List<Annotation> annotationToRemoveList = new ArrayList<Annotation>();

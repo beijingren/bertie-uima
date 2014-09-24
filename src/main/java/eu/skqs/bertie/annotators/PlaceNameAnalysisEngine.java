@@ -59,7 +59,7 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// Logger
 		logger = uimaContext.getLogger();
-		logger.log(Level.INFO, "PlaceNameAnalysisEngine initialize...");
+		logger.log(Level.FINE, "PlaceNameAnalysisEngine initialize...");
 
 		// Get place names from shared resource
 		mPlaceNamePattern = Pattern.compile(Joiner.on("|").join(
@@ -68,7 +68,7 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
-		logger.log(Level.INFO, "PlaceNameAnalysisEngine process...");
+		logger.log(Level.FINE, "PlaceNameAnalysisEngine process...");
 
 		// Get document text
 		String docText = aJCas.getDocumentText();
@@ -94,6 +94,6 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
-		logger.log(Level.INFO, "Total place names: " + totalPlaceNames);
+		logger.log(Level.FINE, "Total place names: " + totalPlaceNames);
 	}
 }

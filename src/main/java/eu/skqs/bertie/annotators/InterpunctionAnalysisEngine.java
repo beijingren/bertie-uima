@@ -53,7 +53,7 @@ public class InterpunctionAnalysisEngine extends JCasAnnotator_ImplBase {
 		super.initialize(uimaContext);
 
 		logger = uimaContext.getLogger();
-		logger.log(Level.INFO, "InterpunctionAnalysisEngine initialize...");
+		logger.log(Level.FINE, "InterpunctionAnalysisEngine initialize...");
 
 		mInterpunctionPattern = Pattern.compile("，|。|！|、|“|”|「|」|：|？|《|》|•|（|）|；");
 	}
@@ -61,7 +61,7 @@ public class InterpunctionAnalysisEngine extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
 
-		logger.log(Level.INFO, "InterpunctionAnalysisEngine process...");
+		logger.log(Level.FINE, "InterpunctionAnalysisEngine process...");
 
 		// Get document text
 		String docText = aJCas.getDocumentText();
@@ -88,6 +88,6 @@ public class InterpunctionAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
-		System.out.println("Total interpunction: " + totalInterpunction);
+		logger.log(Level.FINE, "Total interpunction: " + totalInterpunction);
 	}
 }

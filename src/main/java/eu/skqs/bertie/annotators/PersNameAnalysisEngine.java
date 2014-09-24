@@ -87,7 +87,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// Logger
 		logger = uimaContext.getLogger();
-		logger.log(Level.INFO, "PersNameAnalysisEngine initialize...");
+		logger.log(Level.FINE, "PersNameAnalysisEngine initialize...");
 
 		// Get person names from shared resource
 		mPersNamePattern = Pattern.compile(Joiner.on("|").join(
@@ -158,7 +158,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
 
-		logger.log(Level.INFO, "PersNameAnalysisEngine process...");
+		logger.log(Level.FINE, "PersNameAnalysisEngine process...");
 
 		// Get document text
 		String docText = aJCas.getDocumentText();
@@ -225,6 +225,6 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
-		System.out.println("Total Individuals: " + totalPersName);
+		logger.log(Level.FINE, "Total Individuals: " + totalPersName);
 	}
 }

@@ -47,13 +47,13 @@ public class TeiAnalysisEngine extends JCasAnnotator_ImplBase {
 	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {
 
 		logger = uimaContext.getLogger();
-		logger.log(Level.INFO, "TeiAnalysisEngine initialize...");
+		logger.log(Level.FINE, "TeiAnalysisEngine initialize...");
 	}
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
 
-		logger.log(Level.INFO, "TeiAnalysisEngine initialize...");
+		logger.log(Level.FINE, "TeiAnalysisEngine initialize...");
 
 		String result = null;
 

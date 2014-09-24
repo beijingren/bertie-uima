@@ -68,7 +68,7 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 		super.initialize(uimaContext);
 
 		logger = uimaContext.getLogger();
-		logger.log(Level.INFO, "NumberUnitAnalysisEngine initialize...");
+		logger.log(Level.FINE, "NumberUnitAnalysisEngine initialize...");
 
 		mFixedTimeExpression = new HashMap<String, Integer>();
 		mFixedTimeExpression.put("及冠", 20);
@@ -143,7 +143,7 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 
-		logger.log(Level.INFO, "NumberUnitAnalysisEngine process...");
+		logger.log(Level.FINE, "NumberUnitAnalysisEngine process...");
 
 		String docText = jcas.getDocumentText();
 		int documentLength = docText.length();
@@ -231,6 +231,6 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
-		System.out.println("Total interpunction: " + totalNumerals);
+		logger.log(Level.FINE, "Total interpunction: " + totalNumerals);
 	}
 }

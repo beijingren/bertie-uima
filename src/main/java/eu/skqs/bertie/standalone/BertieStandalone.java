@@ -203,7 +203,7 @@ public class BertieStandalone {
 		annotation.setUri(currentFile.getAbsoluteFile().toString());
 		annotation.addToIndexes();
 
-		System.out.println(currentFile.getAbsoluteFile().toString());
+		logger.log(Level.INFO, currentFile.getAbsoluteFile().toString());
 
 		try {
 			TeiDeserializer.deserialize(inputStream, cas);
