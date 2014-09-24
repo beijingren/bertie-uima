@@ -57,12 +57,6 @@ public class Sparql {
 			throw new ResourceInitializationException();
 		}
 
-		System.out.println("++++ " +rdfFile);
-		try {
-			System.out.println(new FileReader(new File(rdfFile)).read());
-		} catch (Exception e) {
-		}
-
 		Model model = ModelFactory.createMemModelMaker().createModel("SKQS");
 		model.read(in, null);
 

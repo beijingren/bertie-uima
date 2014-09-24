@@ -57,7 +57,7 @@ public class PlaceNameResource implements SharedResourceObject {
 			rs = Sparql.loadQuery(rdfFile, placeNameQuery);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("EXCEPTION!!!!");
+			throw new ResourceInitializationException();
 		}
 
 
