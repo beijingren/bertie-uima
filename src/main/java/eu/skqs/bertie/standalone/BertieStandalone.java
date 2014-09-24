@@ -203,6 +203,8 @@ public class BertieStandalone {
 		annotation.setUri(currentFile.getAbsoluteFile().toString());
 		annotation.addToIndexes();
 
+		System.out.println(currentFile.getAbsoluteFile().toString());
+
 		try {
 			TeiDeserializer.deserialize(inputStream, cas);
 		} catch (SAXException e) {

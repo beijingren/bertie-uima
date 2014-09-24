@@ -55,7 +55,7 @@ public class InterpunctionAnalysisEngine extends JCasAnnotator_ImplBase {
 		logger = uimaContext.getLogger();
 		logger.log(Level.INFO, "InterpunctionAnalysisEngine initialize...");
 
-		mInterpunctionPattern = Pattern.compile("，|。|！|、|“|”|「|」|：|？|《|》|•|（|）");
+		mInterpunctionPattern = Pattern.compile("，|。|！|、|“|”|「|」|：|？|《|》|•|（|）|；");
 	}
 
 	@Override
