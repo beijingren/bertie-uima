@@ -161,22 +161,26 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// Get document text
 		String docText = aJCas.getDocumentText();
-
 		int documentLength = docText.length();
+
 		int pos = 0;
 		Matcher matcher = null;
 
 		// Sexagenary cycle
-		pos = 0;
-		matcher = mSexagenaryCyclePattern.matcher(docText);
-		while (matcher.find(pos)) {
-			Num annotation = new Num(aJCas, matcher.start(), matcher.end());
+		if (mSexagenaryCycleMap.isEmpty()) {
+			logger.log(Level.WARNING, "SexagenaryCycleMap is empty.");
+		} else {
+			pos = 0;
+			matcher = mSexagenaryCyclePattern.matcher(docText);
+			while (matcher.find(pos)) {
+				Num annotation = new Num(aJCas, matcher.start(), matcher.end());
 
-			int value = mSexagenaryCycleMap.get(matcher.group());
-			annotation.setValue(value);	
-			annotation.addToIndexes();
+				int value = mSexagenaryCycleMap.get(matcher.group());
+				annotation.setValue(value);
+				annotation.addToIndexes();
 
-			pos = matcher.end();
+				pos = matcher.end();
+			}
 		}
 
 		// Time expressions

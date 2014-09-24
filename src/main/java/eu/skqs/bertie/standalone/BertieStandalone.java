@@ -207,13 +207,6 @@ public class BertieStandalone {
 		text.setBegin(startPosition);
 		text.setEnd(endPosition);
 		text.addToIndexes();
-/*
-		Chapter chapter = new Chapter(jcas);
-		chapter.setBegin(startPosition);
-		chapter.setEnd(endPosition);
-		chapter.setN(1);
-		chapter.addToIndexes();
-*/
 
 		Div div = new Div(jcas);
 		div.setBegin(startPosition);

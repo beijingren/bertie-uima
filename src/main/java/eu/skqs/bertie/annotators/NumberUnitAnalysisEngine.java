@@ -45,6 +45,7 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Measure patterns
 	private Pattern mNumeralsPattern;
+	private Pattern mSpecialNumeralsPattern;
 	private Pattern mYearMeasurePattern;
 	private Pattern mFixedTimeExpressionPattern;
 	private Pattern mTimePostfixPattern;
@@ -88,6 +89,7 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 		mNumeralsMap.put("萬", 10000);
 
 		mNumeralsPattern = Pattern.compile("[一二三四五六七八九十百千萬]+", Pattern.MULTILINE);
+		mSpecialNumeralsPattern = Pattern.compile("(正)(日|月)", Pattern.MULTILINE);
 
 		mTimePostfixMap = new HashMap<String, String>();
 		mTimePostfixMap.put("歲", "year");
@@ -103,6 +105,39 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		mFixedTimeExpressionPattern = Pattern.compile(
 		    Joiner.on("|").join(mFixedTimeExpression.keySet()));
+	}
+
+	private int calculateNumeral(String numeral) {
+			if (numeral.equals("")) {
+				return 0;
+			}
+
+			if (numeral.length() == 1) {
+				return mNumeralsMap.get(numeral);
+			}
+
+			int latestValue = 0;
+			int latestPosition = 0;
+
+			for (int i = 0; i < numeral.length(); i++) {
+				String singleNumeral = numeral.substring(i, i+1);
+				int val = mNumeralsMap.get(singleNumeral);
+
+				if (val > latestValue) {
+					latestValue = val;
+					latestPosition = i;
+				}
+			}
+
+			String prefix = numeral.substring(0, latestPosition);
+			String postfix = numeral.substring(latestPosition+1, numeral.length());
+
+			// 十七萬二百六十三
+			if (prefix.equals("") && latestValue == 10) {
+				return 10 + calculateNumeral(postfix);
+			}
+
+			return calculateNumeral(prefix) * latestValue + calculateNumeral(postfix);
 	}
 
 	@Override
@@ -124,23 +159,22 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 			    matcher.end());
 
 			// Calculate value
-			String numeral = matcher.group();
-			int result = 0;
-			for (int i = 0; i < numeral.length(); i++) {
-				String singleNumeral = numeral.substring(i, i+1);
-				int val = mNumeralsMap.get(singleNumeral);
-				if (val < 10) {
-					result = result + val;
-				} else {
-					// 十 , 斬首萬餘
-					if (val >= 10) {
-						result = result + val;
-					} else {
-						result = result * val;
-					}
-				}
-			}
+			int result = calculateNumeral(matcher.group());
 			annotation.setValue(result);
+			annotation.addToIndexes();
+
+			totalNumerals++;
+			pos = matcher.end();
+		}
+
+		// Special numerals
+		pos = 0;
+		matcher = mSpecialNumeralsPattern.matcher(docText);
+		while (matcher.find(pos)) {
+			Num annotation = new Num(jcas, matcher.start(1),
+			    matcher.end(1));
+
+			annotation.setValue(1);
 			annotation.addToIndexes();
 
 			totalNumerals++;

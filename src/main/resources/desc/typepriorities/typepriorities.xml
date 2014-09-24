@@ -30,6 +30,9 @@
 			<type>eu.skqs.type.Chapter</type>
 			<type>eu.skqs.type.Div</type>
 			<type>eu.skqs.type.P</type>
+			<type>eu.skqs.type.Quote</type>
+			<type>eu.skqs.type.Measure</type>
+			<type>eu.skqs.type.Num</type>
                 </priorityList>
         </priorityLists>
 </typePriorities>
