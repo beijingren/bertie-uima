@@ -168,7 +168,7 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// Sexagenary cycle
 		if (mSexagenaryCycleMap.isEmpty()) {
-			logger.log(Level.WARNING, "SexagenaryCycleMap is empty.");
+			logger.log(Level.WARNING, "   SexagenaryCycleMap is empty.");
 		} else {
 			pos = 0;
 			matcher = mSexagenaryCyclePattern.matcher(docText);

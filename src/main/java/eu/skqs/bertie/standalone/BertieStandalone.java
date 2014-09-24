@@ -23,6 +23,7 @@ import static org.apache.uima.fit.factory.TypeSystemDescriptionFactory.createTyp
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -52,6 +53,9 @@ import org.apache.uima.util.XMLSerializer;
 import static org.apache.uima.fit.factory.ExternalResourceFactory.bindResource;
 
 import org.xml.sax.SAXException;
+
+import eu.skqs.cas.TeiDeserializer;
+import eu.skqs.type.SourceDocumentInformation;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
@@ -90,6 +94,11 @@ public class BertieStandalone {
 
 	private static Logger logger = Logger.getLogger("BertieStandalone");
 	private static String owlPath = "/docker/dublin-store/rdf/sikuquanshu.rdf";
+
+	private static String filePath;
+
+	// TODO: move to initialize
+	private static String newLine = System.getProperty("line.separator");
 
 	public BertieStandalone() {
 	}
@@ -163,15 +172,112 @@ public class BertieStandalone {
 		SimplePipeline.runPipeline(reader, engine0, engine1, engine2, engine3, engine4, engine5, deduplicator, writer);
 	}
 
+	public static void processWithFile() throws Exception {
+		logger.log(Level.INFO, "Processing started.");
+
+		JCas jcas = null;
+		CAS cas = null;
+		TypePriorities typePriorities = null;
+
+		// Generate jcas object
+		try {
+			typePriorities = TypePrioritiesFactory.createTypePriorities();
+		} catch (ResourceInitializationException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			cas = CasCreationUtils.createCas(createTypeSystemDescription(),
+			    typePriorities, null);
+			jcas = cas.getJCas();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.log(Level.WARNING, "CAS object could not be generated.");
+		}
+
+		// Read the document
+		File currentFile = new File(filePath);
+		FileInputStream inputStream = new FileInputStream(currentFile);
+
+		SourceDocumentInformation annotation = new SourceDocumentInformation(jcas);
+		annotation.setUri(currentFile.getAbsoluteFile().toString());
+		annotation.addToIndexes();
+
+		try {
+			TeiDeserializer.deserialize(inputStream, cas);
+		} catch (SAXException e) {
+			e.printStackTrace();
+			throw new Exception(e);
+		} finally {
+			inputStream.close();
+		}
+
+		AnalysisEngineDescription engine0 =
+ 		    AnalysisEngineFactory.createEngineDescription(
+		    AuxiliaryAnalysisEngine.class);
+
+		// Shared resource
+		bindResource(engine0, AuxiliaryAnalysisEngine.MODEL_KEY,
+		    SPARQLSharedResource.class, owlPath);
+
+		AnalysisEngineDescription engine1 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    InterpunctionAnalysisEngine.class);
+
+		AnalysisEngineDescription engine2 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    NumberUnitAnalysisEngine.class);
+
+		AnalysisEngineDescription engine3 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    PersNameAnalysisEngine.class);
+
+		// Shared resource
+		bindResource(engine3, PersNameAnalysisEngine.MODEL_KEY,
+		    PersNameResource.class, owlPath);
+
+		AnalysisEngineDescription engine4 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    DateTimeAnalysisEngine.class);
+
+		// Shared resource
+		bindResource(engine4, DateTimeAnalysisEngine.MODEL_KEY,
+		    SPARQLSharedResource.class, owlPath);
+
+		AnalysisEngineDescription engine5 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    PlaceNameAnalysisEngine.class);
+
+		// Shared resource
+		bindResource(engine5, PlaceNameAnalysisEngine.MODEL_KEY,
+		    PlaceNameResource.class, owlPath);
+
+		SimplePipeline.runPipeline(jcas, engine0, engine1, engine2,
+		    engine3, engine4, engine5);
+
+		// Deduplication
+		AnalysisEngineDescription deduplicator =
+		    AnalysisEngineFactory.createEngineDescription(
+		    DeduplicatorAnalysisEngine.class);
+
+		// TEI serializer
+		AnalysisEngineDescription writer =
+		    AnalysisEngineFactory.createEngineDescription(
+		    TeiAnalysisEngine.class);
+
+		SimplePipeline.runPipeline(jcas, engine0, engine1, engine2, engine3, engine4, engine5, deduplicator, writer);
+	}
+
 	public String process(String document) throws Exception {
 		logger.log(Level.INFO, "Processing started.");
 
 		int startPosition = 0;
 		int endPosition = document.length();
 
-		// Generate jcas object
 		JCas jcas = null;
 		TypePriorities typePriorities = null;
+
+		// Generate jcas object
 		try {
 			typePriorities = TypePrioritiesFactory.createTypePriorities();
 		} catch (ResourceInitializationException e) {
@@ -183,7 +289,6 @@ public class BertieStandalone {
 			    typePriorities, null);
 			jcas = cas.getJCas();
 			jcas.setDocumentText(document);
-			logger.log(Level.FINE, "CAS object generated.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.log(Level.WARNING, "CAS object could not be generated.");
@@ -319,9 +424,6 @@ public class BertieStandalone {
 		BertieStandalone standalone = new BertieStandalone();
 		String documentPath = null;
 
-		// TODO: move to initialize
-		String newLine = System.getProperty("line.separator");
-
 		// Check for custom OWL
 		if (cmdline.hasOption("owl")) {
 			owlPath = cmdline.getOptionValue("owl");
@@ -350,13 +452,27 @@ public class BertieStandalone {
 
 		// Check for file option
 		if (cmdline.hasOption("file")) {
+			// TODO: clean this up
+			documentPath = cmdline.getOptionValue("file");
+			filePath = cmdline.getOptionValue("file");
+
+			// TEI
+			if (cmdline.hasOption("tei")) {
+				try {
+					processWithFile();
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(-1);
+				}
+				System.exit(0);
+			}
+	
 			// Check for plain option
 			if (!cmdline.hasOption("plain")) {
 				logger.log(Level.WARNING,
 				    "Plain text format must be selected with file argument");
 				System.exit(-1);
 			}
-			documentPath = cmdline.getOptionValue("file");
 		} else {
 			logger.log(Level.WARNING, "No file argument given. Quitting.");
 			formatter.printHelp("bertie", options);
@@ -373,8 +489,6 @@ public class BertieStandalone {
 		// Read the document
 		try {
 			String encodingType = "UTF-8";
-
-			logger.log(Level.INFO, "Reading document " + documentPath);
 
 			BufferedReader fileReader = new BufferedReader(
 			    new InputStreamReader(new FileInputStream(documentPath), encodingType));
