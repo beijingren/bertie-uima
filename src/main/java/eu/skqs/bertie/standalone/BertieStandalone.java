@@ -71,15 +71,16 @@ import eu.skqs.bertie.annotators.TeiAnalysisEngine;
 
 import eu.skqs.bertie.annotators.AuxiliaryAnalysisEngine;
 import eu.skqs.bertie.annotators.DateTimeAnalysisEngine;
+import eu.skqs.bertie.annotators.DeduplicatorAnalysisEngine;
 import eu.skqs.bertie.annotators.InterpunctionAnalysisEngine;
 import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
 import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
-import eu.skqs.bertie.annotators.DeduplicatorAnalysisEngine;
+import eu.skqs.bertie.annotators.PreprocessPlainAnalysisEngine;
 import eu.skqs.bertie.cas.TeiCasSerializer;
 import eu.skqs.bertie.collection.TeiCollectionReader;
-import eu.skqs.bertie.resources.PlaceNameResource;
 import eu.skqs.bertie.resources.PersNameResource;
+import eu.skqs.bertie.resources.PlaceNameResource;
 import eu.skqs.bertie.resources.SPARQLSharedResource;
 
 import eu.skqs.type.Body;
@@ -93,7 +94,7 @@ import eu.skqs.type.Text;
 public class BertieStandalone {
 
 	private static Logger logger = Logger.getLogger("BertieStandalone");
-	private static String owlPath = "/docker/dublin-store/rdf/sikuquanshu.rdf";
+	private static String owlPath = "/docker/dublin-store/rdf/sikuquanshu.owl";
 
 	private static String filePath;
 
@@ -325,6 +326,10 @@ public class BertieStandalone {
 		// Run engines
 		String result = null;
 
+		AnalysisEngineDescription preprocess =
+		    AnalysisEngineFactory.createEngineDescription(
+		    PreprocessPlainAnalysisEngine.class);
+
 		AnalysisEngineDescription engine0 =
  		    AnalysisEngineFactory.createEngineDescription(
 		    AuxiliaryAnalysisEngine.class);
@@ -365,7 +370,7 @@ public class BertieStandalone {
 		bindResource(engine5, PlaceNameAnalysisEngine.MODEL_KEY,
 		    PlaceNameResource.class, owlPath);
 
-		SimplePipeline.runPipeline(jcas, engine0, engine1, engine2,
+		SimplePipeline.runPipeline(jcas, preprocess, engine0, engine1, engine2,
 		    engine3, engine4, engine5);
 		TeiCasSerializer teiSer = new TeiCasSerializer();
 

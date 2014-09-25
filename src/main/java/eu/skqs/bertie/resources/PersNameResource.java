@@ -46,13 +46,14 @@ public final class PersNameResource implements SharedResourceObject {
 	    "SELECT ?subject WHERE { ?subject rdf:type :Person . }";
 
 	public void load(DataResource data) throws ResourceInitializationException {
-		String rdfFile = data.getUri().toString();
+		String owlFile = data.getUri().toString();
 
 		ResultSet rs = null;
 		try {
-			rs = Sparql.loadQuery(rdfFile, persNameQuery);
+			rs = Sparql.loadQuery(owlFile, persNameQuery);
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw new ResourceInitializationException();
 		}
 
 		for (; rs.hasNext(); ) {

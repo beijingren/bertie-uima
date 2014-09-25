@@ -52,7 +52,6 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 	private SPARQLSharedResource sparqlSharedResource;
 
 	// Patterns
-	private Pattern mParagraphPattern;
 	private Pattern mTitlePattern;
 	private Pattern mQuotePattern;
 	private Pattern mTermPattern;
@@ -67,8 +66,6 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 		mTermPattern = Pattern.compile("(" + Joiner.on("|").join(
 		    sparqlSharedResource.getTerms()) + ")");
 
-		mParagraphPattern = Pattern.compile("(^.*\\S+.*$)+", Pattern.MULTILINE);
-
 		mTitlePattern = Pattern.compile("《(.+?)》", Pattern.MULTILINE);
 		mQuotePattern = Pattern.compile("「(.+?)」", Pattern.MULTILINE);
 	}
@@ -79,19 +76,8 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		String documentText = jcas.getDocumentText();
 
-		// Paragraphs
 		int pos = 0;
-		Matcher matcher = mParagraphPattern.matcher(documentText);
-		while (matcher.find(pos)) {
-
-			Div div = new Div(jcas, matcher.start(), matcher.end());
-			div.addToIndexes();
-
-			P p = new P(jcas, matcher.start(), matcher.end());
-			p.addToIndexes();
-
-			pos = matcher.end();
-		}
+		Matcher matcher = null;
 
 		// Titles
 		pos = 0;

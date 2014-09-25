@@ -31,8 +31,12 @@
 			<type>eu.skqs.type.Div</type>
 			<type>eu.skqs.type.P</type>
 			<type>eu.skqs.type.Quote</type>
+			<type>eu.skqs.type.PersName</type>
+			<type>eu.skqs.type.PlaceName</type>
+			<type>eu.skqs.type.Term</type>
 			<type>eu.skqs.type.Measure</type>
 			<type>eu.skqs.type.Num</type>
+			<type>eu.skqs.type.Pc</type>
                 </priorityList>
         </priorityLists>
 </typePriorities>

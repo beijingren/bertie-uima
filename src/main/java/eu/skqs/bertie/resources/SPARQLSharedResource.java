@@ -37,7 +37,7 @@ import eu.skqs.bertie.resources.Sparql;
 
 public final class SPARQLSharedResource implements SharedResourceObject {
 
-	private String mRDFFile;
+	private String mOWLFile;
 
 	private Vector mTerms = new Vector();
 
@@ -68,7 +68,7 @@ public final class SPARQLSharedResource implements SharedResourceObject {
 
 		ResultSet rs = null;
 		try {
-			rs = Sparql.loadQuery(mRDFFile, sexagenaryCyclesQuery);
+			rs = Sparql.loadQuery(mOWLFile, sexagenaryCyclesQuery);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -87,13 +87,13 @@ public final class SPARQLSharedResource implements SharedResourceObject {
 	}
 
 	public void load(DataResource data) throws ResourceInitializationException {
-		mRDFFile = data.getUri().toString();
+		mOWLFile = data.getUri().toString();
 
 		loadSexagenaryCycles();
 
 		ResultSet rs = null;
 		try {
-			rs = Sparql.loadQuery(mRDFFile, termQuery);
+			rs = Sparql.loadQuery(mOWLFile, termQuery);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -50,11 +50,11 @@ public class PlaceNameResource implements SharedResourceObject {
 	    "}";
 
 	public void load(DataResource data) throws ResourceInitializationException {
-		String rdfFile = data.getUri().toString();
+		String owlFile = data.getUri().toString();
 
 		ResultSet rs = null;
 		try {
-			rs = Sparql.loadQuery(rdfFile, placeNameQuery);
+			rs = Sparql.loadQuery(owlFile, placeNameQuery);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ResourceInitializationException();
