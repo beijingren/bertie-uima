@@ -1,0 +1,6 @@
+#!/bin/sh
+
+JVM_ARGS=${JVM_ARGS:--Xmx1200M}
+JAR="target/bertie-uima-0.0.1-SNAPSHOT.jar"
+JAR="$(echo $JAR)"
+exec java -jar "$JAR" "$@"
