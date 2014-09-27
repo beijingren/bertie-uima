@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -75,11 +76,6 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	@ExternalResource(key = MODEL_KEY)
 	private SPARQLSharedResource sparqlSharedResource;
 
-	// TODO:
-	// RDF
-	private String rdfFile = "/docker/dublin-store/rdf/sikuquanshu.rdf";
-	private int prefixLength = "http://example.org/owl/sikuquanshu#".length();
-
 	// Dynasties
 	private String	mDynastiesBase;
 	private String	mTwoCharacterDynasties;
@@ -89,11 +85,13 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	private Pattern	mDynastiesExpressionPattern;
 	private Pattern	mDynastiesPrefixPattern;
 	private Pattern	mSexagenaryCyclePattern;
+	private Pattern	mEraNamePattern;
 	private Pattern	mTwoCharacterDynastiesPattern;
 
 	private HashMap<String, String> mDynasties;
 	private Map<String, String> mTimeExpressionsMap;
 	private Map<String, Integer> mSexagenaryCycleMap;
+	private Map<String, Integer> mEraNameMap;
 
 	// Temporal markers
 	private Pattern	mTemporalPattern = Pattern.compile("以前|以後");
@@ -151,7 +149,11 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		mSexagenaryCycleMap = SPARQLSharedResource.getSexagenaryCycles();
 		mSexagenaryCyclePattern = Pattern.compile(Joiner.on("|").join(
-		     mSexagenaryCycleMap.keySet()));
+		    mSexagenaryCycleMap.keySet()));
+
+		mEraNameMap = SPARQLSharedResource.getEraNames();
+		mEraNamePattern = Pattern.compile(Joiner.on("|").join(
+		    mEraNameMap.keySet()));
 	}
 
 	@Override
@@ -177,6 +179,23 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 
 				int value = mSexagenaryCycleMap.get(matcher.group());
 				annotation.setValue(value);
+				annotation.addToIndexes();
+
+				pos = matcher.end();
+			}
+		}
+
+		// Era names
+		if (mEraNameMap.isEmpty()) {
+			logger.log(Level.WARNING, "    EraNameMap is empty.");
+		} else {
+			pos = 0;
+			matcher = mEraNamePattern.matcher(docText);
+			while (matcher.find(pos)) {
+				Date annotation = new Date(aJCas, matcher.start(), matcher.end());
+
+				Integer value = mEraNameMap.get(matcher.group());
+				annotation.setWhen(value.toString());
 				annotation.addToIndexes();
 
 				pos = matcher.end();

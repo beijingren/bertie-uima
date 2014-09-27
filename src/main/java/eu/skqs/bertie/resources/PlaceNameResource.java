@@ -34,17 +34,14 @@ import eu.skqs.bertie.resources.Sparql;
 
 
 public class PlaceNameResource implements SharedResourceObject {
-	private String mPlaceNamePattern;
 
-	private Vector mPlaceNames = new Vector();
-
-	private int prefixLength = "http://example.org/owl/sikuquanshu#".length();
+	private Vector mPlaceNamesVector = new Vector();
 
 	private String placeNameQuery =
 	    "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
 	    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
 	    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-	    "SELECT DISTINCT ?subject WHERE {\n" +
+	    "SELECT DISTINCT (strafter(str(?subject), str(:)) AS ?placename) WHERE {\n" +
 	    "    ?class rdfs:subClassOf* :Place  .\n" +
 	    "    ?subject rdf:type ?class .\n" +
 	    "}";
@@ -64,22 +61,16 @@ public class PlaceNameResource implements SharedResourceObject {
 		for (; rs.hasNext(); ) {
 			QuerySolution rb = rs.nextSolution();
 
-			RDFNode x = rb.get("subject");
-
-			if (x.isLiteral()) {
-				Literal subjectStr = (Literal)x;
-			} else {
-			}
-
-			String placeName = x.toString().substring(prefixLength);
-
+			RDFNode x = rb.get("placename");
+			Literal placeNameLiteral = (Literal)x;
+			String placeName = placeNameLiteral.toString();
 			// Single character names are in general too common,
 			// skip them for now
 			if (placeName.length() > 1) {
-				mPlaceNames.add(placeName);
+				mPlaceNamesVector.add(placeName);
 			}
 		}
 	}
 
-	public Vector getPlaceNames() { return mPlaceNames; }
+	public Vector getPlaceNames() { return mPlaceNamesVector; }
 }

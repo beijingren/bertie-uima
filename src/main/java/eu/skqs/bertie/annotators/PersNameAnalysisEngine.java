@@ -25,6 +25,8 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Vector;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -52,6 +54,7 @@ import com.google.common.base.Joiner;
 
 import eu.skqs.bertie.resources.PersNameResource;
 import eu.skqs.type.PersName;
+import eu.skqs.type.Name;
 
 
 public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
@@ -69,10 +72,10 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Zi
 	private Pattern mZiPattern;
+	private Map<String, String> mZiNameMap = new HashMap<String, String>();
 
 	private Pattern mMaternalPattern;
 	private Pattern mEditorPattern;
-
 
 	// Annotation counter
 	private int totalPersName = 0;
@@ -98,9 +101,12 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		 */
 		// TODO: add attribute to person who has this name
 		String queryString =
-			"PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
-			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-			"SELECT ?zi WHERE { ?s :zi ?zi . }";
+		     "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
+		     "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+		     "SELECT DISTINCT " +
+		     "(strafter(str(?subject), str(:)) AS ?key) " +
+		     "(strafter(str(?object), str(:)) AS ?zi) " +
+		     "WHERE { ?subject :zi ?object . }";
 
 
 		InputStream in = null;
@@ -121,7 +127,6 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
 
-		Vector zis = new Vector();
 
 		try {
 			ResultSet rs = qe.execSelect();
@@ -130,24 +135,18 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 				QuerySolution rb = rs.nextSolution();
 
 				RDFNode x = rb.get("zi");
-				if (x.isLiteral()) {
-					Literal subjectStr = (Literal)x;
-				} else {
-				}
+				Literal zi = (Literal)x;
 
-				String zi = x.toString().substring(prefixLength);
+				RDFNode y = rb.get("key");
+				Literal key = (Literal)y;
 
-				// Single character names are in general too common,
-				// skip them for now
-				if (zi.length() > 1) {
-					zis.add(zi);
-				}
+				mZiNameMap.put(zi.getString(), key.getString());
 			}
 		} finally {
 			qe.close();
 		}
 
-		mZiPattern = Pattern.compile(Joiner.on("|").join(zis));
+		mZiPattern = Pattern.compile(Joiner.on("|").join(mZiNameMap.keySet()));
 
 		mMaternalPattern = Pattern.compile("(母|姓)(\\p{Alnum}{1,2})氏", Pattern.UNICODE_CHARACTER_CLASS);
 
@@ -182,13 +181,14 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		pos = 0;
 		matcher = mZiPattern.matcher(docText);
 		while (matcher.find(pos)) {
+			String key = mZiNameMap.get(matcher.group());
 
 			// Found match
-			PersName annotation = new PersName(aJCas, matcher.start(), matcher.end());
+			Name annotation = new Name(aJCas, matcher.start(), matcher.end());
 
+			annotation.setTEItype("zi");
+			annotation.setKey(key);
 			annotation.addToIndexes();
-
-			totalPersName++;
 
 			pos = matcher.end();
 		}

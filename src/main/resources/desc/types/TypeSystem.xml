@@ -153,6 +153,24 @@
 		</typeDescription>
 
 		<typeDescription>
+			<name>eu.skqs.type.Name</name>
+			<description></description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+				<featureDescription>
+					<name>TEItype</name>
+					<description>Type of this name.</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
+				<featureDescription>
+					<name>key</name>
+					<description>Key to person.</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
 			<name>eu.skqs.type.PlaceName</name>
 			<description></description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
@@ -165,6 +183,11 @@
 			<description></description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
 			<features>
+				<featureDescription>
+					<name>when</name>
+					<description>time phrase</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
 			</features>
 		</typeDescription>
 

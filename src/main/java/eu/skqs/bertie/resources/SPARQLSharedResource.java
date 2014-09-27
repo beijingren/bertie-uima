@@ -39,6 +39,7 @@ public final class SPARQLSharedResource implements SharedResourceObject {
 
 	private String mOWLFile;
 
+	// Resources
 	private Vector mTerms = new Vector();
 
 	// TODO: remove this already in SPARQL
@@ -54,13 +55,14 @@ public final class SPARQLSharedResource implements SharedResourceObject {
 	    "}";
 
 	private static Map<String, Integer> mSexagenaryCyclesMap = new HashMap<String, Integer>();
+	private static Map<String, Integer> mEraNamesMap = new HashMap<String, Integer>();
 
 	private void loadSexagenaryCycles() {
 		String sexagenaryCyclesQuery =
 		    "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
 		    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
 		    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-		    "SELECT (strafter(str(?subject), str(:)) AS ?cycle) (str(?object) AS ?value)\n" +
+		    "SELECT DISTINCT (strafter(str(?subject), str(:)) AS ?cycle) (str(?object) AS ?value)\n" +
 		    "{\n" +
 		    "    ?subject rdf:type :SexagenaryCycle ;\n" +
 		    "    :value ?object .\n" +
@@ -86,10 +88,47 @@ public final class SPARQLSharedResource implements SharedResourceObject {
 		}
 	}
 
+	private void loadEraNames() throws ResourceInitializationException {
+		String eraNamesQuery =
+		    "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
+		    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+		    "SELECT DISTINCT (strafter(str(?subject), str(:)) AS ?nianhao) (str(?object) AS ?beginYear)\n" +
+		    "{\n" +
+		    "    ?subject rdf:type :Nianhao ;\n" +
+		    "    :beginYear ?object .\n" +
+		    "}";
+
+		ResultSet rs = null;
+		try {
+			rs = Sparql.loadQuery(mOWLFile, eraNamesQuery);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ResourceInitializationException();
+		}
+
+		for (; rs.hasNext(); ) {
+			QuerySolution rb = rs.nextSolution();
+
+			RDFNode x = rb.get("nianhao");
+			Literal nianhao = (Literal)x;
+
+			RDFNode y = rb.get("beginYear");
+			Literal beginYear = (Literal)y;
+
+			mEraNamesMap.put(nianhao.getString(), beginYear.getInt());
+		}
+	}
+
 	public void load(DataResource data) throws ResourceInitializationException {
 		mOWLFile = data.getUri().toString();
 
 		loadSexagenaryCycles();
+
+		try {
+			loadEraNames();
+		} catch (ResourceInitializationException e) {
+			throw new ResourceInitializationException();
+		}
 
 		ResultSet rs = null;
 		try {
@@ -119,4 +158,5 @@ public final class SPARQLSharedResource implements SharedResourceObject {
 	public Vector getTerms() { return mTerms; }
 
 	public static Map<String, Integer> getSexagenaryCycles() { return mSexagenaryCyclesMap; }
+	public static Map getEraNames() { return mEraNamesMap; }
 }

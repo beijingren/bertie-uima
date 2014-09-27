@@ -21,6 +21,7 @@ package eu.skqs.bertie.annotators;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Vector;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -50,7 +51,9 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 	// Patterns
 	private Pattern mPlaceNamePattern;
 
-	// Annotation
+	private Vector mPlaceNameVector;
+
+	// Annotation count
 	private int totalPlaceNames = 0;
 
 	@Override
@@ -62,8 +65,9 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		logger.log(Level.FINE, "PlaceNameAnalysisEngine initialize...");
 
 		// Get place names from shared resource
+		mPlaceNameVector = placeNameResource.getPlaceNames();
 		mPlaceNamePattern = Pattern.compile(Joiner.on("|").join(
-		    placeNameResource.getPlaceNames()));
+		    mPlaceNameVector));
 	}
 
 	@Override
@@ -77,18 +81,22 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		Matcher matcher = null;
 
 		// Annotate place names
-		pos = 0;
-		matcher = mPlaceNamePattern.matcher(docText);
-		while (matcher.find(pos)) {
+		if (mPlaceNameVector.isEmpty()) {
+			logger.log(Level.WARNING, "   mPlaceNameVector is empty.");
+		} else {
+			pos = 0;
+			matcher = mPlaceNamePattern.matcher(docText);
+			while (matcher.find(pos)) {
 
-			// Found match
-			PlaceName annotation = new PlaceName(aJCas, matcher.start(), matcher.end());
+				// Found match
+				PlaceName annotation = new PlaceName(aJCas, matcher.start(), matcher.end());
 
-			annotation.addToIndexes();
+				annotation.addToIndexes();
 
-			totalPlaceNames++;
+				totalPlaceNames++;
 
-			pos = matcher.end();
+				pos = matcher.end();
+			}
 		}
 	}
 

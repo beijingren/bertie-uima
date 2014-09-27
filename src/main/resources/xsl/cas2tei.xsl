@@ -82,6 +82,14 @@
 </pc>
 </xsl:template>
 
+<xsl:template match="eu.skqs.type.Name">
+<name>
+<xsl:attribute name="key"><xsl:value-of select="@key" /></xsl:attribute>
+<xsl:attribute name="type"><xsl:value-of select="@TEItype" /></xsl:attribute>
+<xsl:apply-templates/>
+</name>
+</xsl:template>
+
 <xsl:template match="eu.skqs.type.PersName">
 <persName>
 <xsl:apply-templates/>
@@ -109,6 +117,7 @@
 
 <xsl:template match="eu.skqs.type.Date">
 <date>
+<xsl:attribute name="when"><xsl:value-of select="@when" /></xsl:attribute>
 <xsl:apply-templates/>
 </date>
 </xsl:template>

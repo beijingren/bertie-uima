@@ -98,6 +98,7 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 		mTimePostfixMap.put("月", "month");
 		mTimePostfixMap.put("州", "prefecture");
 		mTimePostfixMap.put("卷", "chapter");
+		mTimePostfixMap.put("人", "people");
 
 		mTimePostfixPattern = Pattern.compile("(" + Joiner.on("|").join(mTimePostfixMap.keySet()) + ")", Pattern.UNICODE_CHARACTER_CLASS);
 
@@ -205,7 +206,10 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 					int quantity = num.getValue();
 					String unit = mTimePostfixMap.get(matcher.group());
 					if (quantity > 1) {
-						unit += "s"; // TODO: language library
+						if (unit.equals("people")) {
+						} else {
+							unit += "s"; // TODO: language library
+						}
 					}
 
 					annotation.setQuantity(quantity);
