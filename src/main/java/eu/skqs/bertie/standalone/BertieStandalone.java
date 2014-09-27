@@ -77,6 +77,7 @@ import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
 import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PreprocessPlainAnalysisEngine;
+import eu.skqs.bertie.annotators.OWLAnalysisEngine;
 import eu.skqs.bertie.cas.TeiCasSerializer;
 import eu.skqs.bertie.collection.TeiCollectionReader;
 import eu.skqs.bertie.resources.PersNameResource;
@@ -102,6 +103,24 @@ public class BertieStandalone {
 	private static String newLine = System.getProperty("line.separator");
 
 	public BertieStandalone() {
+	}
+
+	public void extractWithCollectionReader(String directory) throws Exception {
+		logger.log(Level.INFO, "Extraction started.");
+
+		// TEI reader
+		CollectionReaderDescription reader =
+		    CollectionReaderFactory.createReaderDescription(
+		    TeiCollectionReader.class,
+		    TeiCollectionReader.PARAM_INPUTDIR,
+		    directory);
+
+		AnalysisEngineDescription owl =
+ 		    AnalysisEngineFactory.createEngineDescription(
+		    OWLAnalysisEngine.class);
+
+		SimplePipeline.runPipeline(reader, owl);
+
 	}
 
 	public void processWithCollectionReader(String directory) throws Exception {
@@ -410,12 +429,19 @@ public class BertieStandalone {
 				.withDescription("TEI file format")
 				.create("t");
 
+		Option mode = OptionBuilder.withArgName("extract|minimal|maximal|prosody")
+				.withLongOpt("mode")
+				.hasArg()
+				.withDescription("Mode to operate in")
+				.create("m");
+
 		Options options = new Options();
 		options.addOption(file);
 		options.addOption(directory);
 		options.addOption(owl);
 		options.addOption(plain);
 		options.addOption(tei);
+		options.addOption(mode);
 
 		CommandLineParser parser = new GnuParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -445,7 +471,23 @@ public class BertieStandalone {
 				System.exit(-1);
 			}
 
+
 			String directoryPath = cmdline.getOptionValue("directory");
+
+			if (cmdline.hasOption("mode")) {
+				String currentMode = cmdline.getOptionValue("mode");
+
+				if (currentMode.equals("extract")) {
+
+					try {
+						standalone.extractWithCollectionReader(directoryPath);
+					} catch (Exception e) {
+					}
+
+					System.exit(0);
+				}
+
+			}
 
 			try {
 				standalone.processWithCollectionReader(directoryPath);

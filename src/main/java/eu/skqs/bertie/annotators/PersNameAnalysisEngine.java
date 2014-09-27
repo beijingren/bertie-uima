@@ -200,11 +200,13 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		pos = 0;
 		matcher = mMaternalPattern.matcher(docText);
 		while (matcher.find(pos)) {
-			PersName annotation = new PersName(aJCas, matcher.start(2), matcher.end(2));
+			Name annotation = new Name(aJCas, matcher.start(2), matcher.end(2));
+
+			if (matcher.group(1).equals("母")) {
+				annotation.setTEItype("maternal");
+			}
 
 			annotation.addToIndexes();
-
-			totalPersName++;
 
 			pos = matcher.end();
 		}
