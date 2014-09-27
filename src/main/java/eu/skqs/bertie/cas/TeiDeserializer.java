@@ -42,6 +42,7 @@ import eu.skqs.type.Date;
 import eu.skqs.type.DateRange;
 import eu.skqs.type.Div;
 import eu.skqs.type.Measure;
+import eu.skqs.type.Name;
 import eu.skqs.type.Num;
 import eu.skqs.type.P;
 import eu.skqs.type.Pc;
@@ -82,6 +83,7 @@ public class TeiDeserializer {
 		private static final String TAG_DATERANGE = "dateRange";
 		private static final String TAG_DIV = "div";
 		private static final String TAG_MEASURE = "measure";
+		private static final String TAG_NAME = "name";
 		private static final String TAG_NUM = "num";
 		private static final String TAG_P = "p";
 		private static final String TAG_PC = "pc";
@@ -112,6 +114,7 @@ public class TeiDeserializer {
 		private Stack mDivStack = new Stack();
 		private Stack mQuoteStack = new Stack();
 		private Stack mTermStack = new Stack();
+		private Stack mNameStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
@@ -217,6 +220,22 @@ public class TeiDeserializer {
 				annotation.setBegin(buffer.length());
 
 				mTermStack.push(annotation);
+			} else if (TAG_NAME.equals(qName)) {
+				Name annotation = new Name(mJCas);
+
+				annotation.setBegin(buffer.length());
+
+				String type = aAttributes.getValue("type");
+				if (type != null) {
+					annotation.setTEItype(type);
+				}
+
+				String key = aAttributes.getValue("key");
+				if (key != null) {
+					annotation.setKey(key);
+				}
+
+				mNameStack.push(annotation);
 			}
 
 			tagStart = buffer.length();
@@ -345,6 +364,11 @@ public class TeiDeserializer {
 				annotation.addToIndexes();
 			} else if (TAG_TERM.equals(qName)) {
 				Term annotation = (Term)mTermStack.pop();
+
+				annotation.setEnd(buffer.length());
+				annotation.addToIndexes();
+			} else if (TAG_NAME.equals(qName)) {
+				Name annotation = (Name)mNameStack.pop();
 
 				annotation.setEnd(buffer.length());
 				annotation.addToIndexes();
