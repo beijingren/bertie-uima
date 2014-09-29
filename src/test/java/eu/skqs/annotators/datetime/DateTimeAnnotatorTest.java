@@ -67,7 +67,7 @@ public class DateTimeAnnotatorTest {
 		    AnalysisEngineFactory.createEngineDescription(
 		    DateTimeAnalysisEngine.class);
 
-		String owlPath = "/docker/dublin-store/rdf/sikuquanshu.rdf";
+		String owlPath = JUnitExtension.getFile("owl/sikuquanshu.owl").getPath();
 
 		// Shared resource
 		bindResource(engine0, DateTimeAnalysisEngine.MODEL_KEY,

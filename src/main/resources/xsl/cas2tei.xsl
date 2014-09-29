@@ -117,7 +117,8 @@
 
 <xsl:template match="eu.skqs.type.Date">
 <date>
-<xsl:attribute name="when"><xsl:value-of select="@when" /></xsl:attribute>
+<xsl:attribute name="notBefore"><xsl:value-of select="@notBefore" /></xsl:attribute>
+<xsl:attribute name="notAfter"><xsl:value-of select="@notAfter" /></xsl:attribute>
 <xsl:apply-templates/>
 </date>
 </xsl:template>

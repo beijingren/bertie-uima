@@ -55,7 +55,8 @@ public final class SPARQLSharedResource implements SharedResourceObject {
 	    "}";
 
 	private static Map<String, Integer> mSexagenaryCyclesMap = new HashMap<String, Integer>();
-	private static Map<String, Integer> mEraNamesMap = new HashMap<String, Integer>();
+	private static Map<String, Map<String, Integer>> mEraNamesMap = new HashMap<String, Map<String, Integer>>();
+	private static Map<String, Integer> mEraNamesMap1= new HashMap<String, Integer>();
 
 	private void loadSexagenaryCycles() {
 		String sexagenaryCyclesQuery =
@@ -92,10 +93,14 @@ public final class SPARQLSharedResource implements SharedResourceObject {
 		String eraNamesQuery =
 		    "PREFIX : <http://example.org/owl/sikuquanshu#>\n" +
 		    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-		    "SELECT DISTINCT (strafter(str(?subject), str(:)) AS ?nianhao) (str(?object) AS ?beginYear)\n" +
+		    "SELECT DISTINCT " +
+		    "(strafter(str(?subject), str(:)) AS ?nianhao) " +
+		    "(str(?object1) AS ?beginYear) " +
+		    "(str(?object2) AS ?endYear) " +
 		    "{\n" +
 		    "    ?subject rdf:type :Nianhao ;\n" +
-		    "    :beginYear ?object .\n" +
+		    "    :beginYear ?object1 ;\n" +
+		    "    :endYear ?object2 .\n" +
 		    "}";
 
 		ResultSet rs = null;
@@ -115,7 +120,14 @@ public final class SPARQLSharedResource implements SharedResourceObject {
 			RDFNode y = rb.get("beginYear");
 			Literal beginYear = (Literal)y;
 
-			mEraNamesMap.put(nianhao.getString(), beginYear.getInt());
+			RDFNode z = rb.get("endYear");
+			Literal endYear = (Literal)z;
+
+			Map<String, Integer> eraMap = new HashMap<String, Integer>();
+			eraMap.put("beginYear", beginYear.getInt());
+			eraMap.put("endYear", endYear.getInt());
+
+			mEraNamesMap.put(nianhao.getString(), eraMap);
 		}
 	}
 

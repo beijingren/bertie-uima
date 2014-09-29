@@ -115,6 +115,7 @@ public class TeiDeserializer {
 		private Stack mQuoteStack = new Stack();
 		private Stack mTermStack = new Stack();
 		private Stack mNameStack = new Stack();
+		private Stack mDateStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
@@ -236,6 +237,21 @@ public class TeiDeserializer {
 				}
 
 				mNameStack.push(annotation);
+			} else if (TAG_DATE.equals(qName) && !mTeiHeader) {
+				Date annotation = new Date(mJCas);
+
+				annotation.setBegin(buffer.length());
+
+				String notBefore = aAttributes.getValue("notBefore");
+				if (notBefore != null) {
+					annotation.setNotBefore(notBefore);
+				}
+
+				String notAfter = aAttributes.getValue("notAfter");
+				if (notAfter != null) {
+					annotation.setNotAfter(notAfter);
+				}
+				mDateStack.push(annotation);
 			}
 
 			tagStart = buffer.length();
@@ -253,9 +269,8 @@ public class TeiDeserializer {
 
 				annotation.addToIndexes();
 			} else if (TAG_DATE.equals(qName)) {
-				Date annotation = new Date(mJCas);
+				Date annotation = (Date)mDateStack.pop();
 
-				annotation.setBegin(mPositions.get(TAG_DATE));
 				annotation.setEnd(buffer.length());
 
 				annotation.addToIndexes();

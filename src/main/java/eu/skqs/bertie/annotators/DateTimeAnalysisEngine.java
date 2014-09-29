@@ -40,6 +40,7 @@ import org.apache.uima.util.Logger;
 import com.google.common.base.Joiner;
 
 import eu.skqs.bertie.resources.SPARQLSharedResource;
+import eu.skqs.bertie.util.AnnotationRetrieval;
 import eu.skqs.type.Dynasty;
 import eu.skqs.type.PersName;
 import eu.skqs.type.Measure;
@@ -91,7 +92,7 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	private HashMap<String, String> mDynasties;
 	private Map<String, String> mTimeExpressionsMap;
 	private Map<String, Integer> mSexagenaryCycleMap;
-	private Map<String, Integer> mEraNameMap;
+	private Map<String, Map<String, Integer>> mEraNameMap;
 
 	// Temporal markers
 	private Pattern	mTemporalPattern = Pattern.compile("以前|以後");
@@ -194,11 +195,28 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 			while (matcher.find(pos)) {
 				Date annotation = new Date(aJCas, matcher.start(), matcher.end());
 
-				Integer value = mEraNameMap.get(matcher.group());
-				annotation.setWhen(value.toString());
+				Map<String, Integer> eraMap = mEraNameMap.get(matcher.group());
+				Integer notBefore = eraMap.get("beginYear");
+				Integer notAfter = eraMap.get("endYear");
+
+				annotation.setNotBefore(notBefore.toString());
+				annotation.setNotAfter(notAfter.toString());
 				annotation.addToIndexes();
 
 				pos = matcher.end();
+			}
+		}
+
+		// Era name + Year
+		FSIndex measureIndex = aJCas.getAnnotationIndex(Measure.type);
+		FSIterator measureIterator = measureIndex.iterator();
+		while (measureIterator.hasNext()) {
+			Measure measure = (Measure)measureIterator.next();
+
+			String unit = measure.getUnit();
+			if (unit.equals("year") || unit.equals("years")) {
+				//Annotation era = AnnotationRetrieval.getAdjacentAnnotation(aJCas,
+				//    measure, Date.class, true);
 			}
 		}
 
