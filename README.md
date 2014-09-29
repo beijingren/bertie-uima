@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/beijingren/bertie-uima.svg?branch=master)](https://travis-ci.org/beijingren/bertie-uima)
+
 Bertie
 ======
 UIMA components for the Digital Siku quanshu project.
