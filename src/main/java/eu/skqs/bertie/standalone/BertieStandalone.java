@@ -189,7 +189,8 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    TeiAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(reader, engine0, engine1, engine2, engine3, engine4, engine5, deduplicator, writer);
+		SimplePipeline.runPipeline(reader, engine0, engine1, engine2,
+		    engine3, engine4, engine5, deduplicator, writer);
 	}
 
 	public static void processWithFile() throws Exception {

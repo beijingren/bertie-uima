@@ -100,6 +100,9 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 		mTimePostfixMap.put("卷", "chapter");
 		mTimePostfixMap.put("人", "people");
 
+		// TODO
+		mTimePostfixMap.put("斛", "HU");
+
 		mTimePostfixPattern = Pattern.compile("(" + Joiner.on("|").join(mTimePostfixMap.keySet()) + ")", Pattern.UNICODE_CHARACTER_CLASS);
 
 		mYearMeasurePattern = Pattern.compile(mNumeralsBase + "(歲|年)");

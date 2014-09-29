@@ -220,7 +220,7 @@ public class TeiDeserializer {
 				annotation.setBegin(buffer.length());
 
 				mTermStack.push(annotation);
-			} else if (TAG_NAME.equals(qName)) {
+			} else if (TAG_NAME.equals(qName) && !mTeiHeader) {
 				Name annotation = new Name(mJCas);
 
 				annotation.setBegin(buffer.length());
@@ -367,7 +367,7 @@ public class TeiDeserializer {
 
 				annotation.setEnd(buffer.length());
 				annotation.addToIndexes();
-			} else if (TAG_NAME.equals(qName)) {
+			} else if (TAG_NAME.equals(qName) && !mTeiHeader) {
 				Name annotation = (Name)mNameStack.pop();
 
 				annotation.setEnd(buffer.length());

@@ -55,6 +55,7 @@ import com.google.common.base.Joiner;
 import eu.skqs.bertie.resources.PersNameResource;
 import eu.skqs.type.PersName;
 import eu.skqs.type.Name;
+import eu.skqs.type.PlaceName;
 
 
 public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
@@ -76,6 +77,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	private Pattern mMaternalPattern;
 	private Pattern mEditorPattern;
+	private Pattern mZhengshiPattern;
 
 	// Annotation counter
 	private int totalPersName = 0;
@@ -152,6 +154,11 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// Found in the zongmu
 		mEditorPattern = Pattern.compile("(元|明)(\\p{Alnum}{2,3})撰", Pattern.UNICODE_CHARACTER_CLASS);
+
+		// Found in official histories
+		mZhengshiPattern = Pattern.compile(
+		    "(\\p{Alnum}{2,3})，字(\\p{Alnum}{2,5})，(\\p{Alnum}{2,5})人。",
+		    Pattern.UNICODE_CHARACTER_CLASS);
 	}
 
 	@Override
@@ -163,9 +170,25 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		String docText = aJCas.getDocumentText();
 
 		int pos = 0;
+		Matcher matcher = null;
+
+		matcher = mZhengshiPattern.matcher(docText);
+		while (matcher.find(pos)) {
+
+			PersName annotation = new PersName(aJCas, matcher.start(1), matcher.end(1));
+			annotation.addToIndexes();
+
+			Name annotation2 = new Name(aJCas, matcher.start(2), matcher.end(2));
+			annotation2.setTEItype("zi");
+			annotation2.setKey(matcher.group(1));
+			annotation2.addToIndexes();
+
+			pos = matcher.end();
+		}
 
 		// named Individual
-		Matcher matcher = mPersNamePattern.matcher(docText);
+		pos = 0;
+		matcher = mPersNamePattern.matcher(docText);
 		while (matcher.find(pos)) {
 
 			// Found match
@@ -181,6 +204,8 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		pos = 0;
 		matcher = mZiPattern.matcher(docText);
 		while (matcher.find(pos)) {
+
+			// TODO: there can be more than one person with the same zi
 			String key = mZiNameMap.get(matcher.group());
 
 			// Found match
@@ -197,6 +222,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		// 母鄭
 		// 母杜氏
 		// father and mother
+/*
 		pos = 0;
 		matcher = mMaternalPattern.matcher(docText);
 		while (matcher.find(pos)) {
@@ -206,10 +232,12 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 				annotation.setTEItype("maternal");
 			}
 
+			annotation.set
 			annotation.addToIndexes();
 
 			pos = matcher.end();
 		}
+*/
 
 		// Editor
 		pos = 0;
