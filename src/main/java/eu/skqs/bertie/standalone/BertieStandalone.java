@@ -74,10 +74,11 @@ import eu.skqs.bertie.annotators.DateTimeAnalysisEngine;
 import eu.skqs.bertie.annotators.DeduplicatorAnalysisEngine;
 import eu.skqs.bertie.annotators.InterpunctionAnalysisEngine;
 import eu.skqs.bertie.annotators.NumberUnitAnalysisEngine;
+import eu.skqs.bertie.annotators.OWLAnalysisEngine;
 import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
+import eu.skqs.bertie.annotators.PreprocessAnalysisEngine;
 import eu.skqs.bertie.annotators.PreprocessPlainAnalysisEngine;
-import eu.skqs.bertie.annotators.OWLAnalysisEngine;
 import eu.skqs.bertie.cas.TeiCasSerializer;
 import eu.skqs.bertie.collection.TeiCollectionReader;
 import eu.skqs.bertie.resources.PersNameResource;
@@ -96,7 +97,7 @@ public class BertieStandalone {
 
 	private static Logger logger = Logger.getLogger("BertieStandalone");
 	private static String owlPath = "/docker/dublin-store/rdf/sikuquanshu.owl";
-
+	private static String typesToRemove = "";
 	private static String filePath;
 
 	// TODO: move to initialize
@@ -132,6 +133,12 @@ public class BertieStandalone {
 		    TeiCollectionReader.class,
 		    TeiCollectionReader.PARAM_INPUTDIR,
 		    directory);
+
+		AnalysisEngineDescription engineA =
+		    AnalysisEngineFactory.createEngineDescription(
+		    PreprocessAnalysisEngine.class,
+		    PreprocessAnalysisEngine.PARAM_REMOVETYPES,
+		    typesToRemove);
 
 		AnalysisEngineDescription engine0 =
  		    AnalysisEngineFactory.createEngineDescription(
@@ -189,7 +196,7 @@ public class BertieStandalone {
 		    AnalysisEngineFactory.createEngineDescription(
 		    TeiAnalysisEngine.class);
 
-		SimplePipeline.runPipeline(reader, engine0, engine1, engine2,
+		SimplePipeline.runPipeline(reader, engineA, engine0, engine1, engine2,
 		    engine3, engine4, engine5, deduplicator, writer);
 	}
 
@@ -436,6 +443,12 @@ public class BertieStandalone {
 				.withDescription("Mode to operate in")
 				.create("m");
 
+		Option clean = OptionBuilder.withArgName("T0,T1,T3")
+				.withLongOpt("clean")
+				.hasArg()
+				.withDescription("Remove gives types, MUST START UPPERCASE")
+				.create("c");
+
 		Options options = new Options();
 		options.addOption(file);
 		options.addOption(directory);
@@ -443,6 +456,7 @@ public class BertieStandalone {
 		options.addOption(plain);
 		options.addOption(tei);
 		options.addOption(mode);
+		options.addOption(clean);
 
 		CommandLineParser parser = new GnuParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -461,6 +475,11 @@ public class BertieStandalone {
 		// Check for custom OWL
 		if (cmdline.hasOption("owl")) {
 			owlPath = cmdline.getOptionValue("owl");
+		}
+
+		// Check for clean
+		if (cmdline.hasOption("clean")) {
+			typesToRemove = cmdline.getOptionValue("clean");
 		}
 
 		// Check for directory option

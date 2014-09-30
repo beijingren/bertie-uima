@@ -111,7 +111,7 @@ public class AnnotationRetrieval {
 					while (cursor.isValid()) {
 						cursor.moveToPrevious();
 						Annotation annotation = (Annotation) cursor.get();
-						if (adjacentClass.isInstance(annotation) && annotation.getEnd() <= focusAnnotation.getBegin()) return adjacentClass
+						if (adjacentClass.isInstance(annotation) && annotation.getEnd() == focusAnnotation.getBegin()) return adjacentClass
 						.cast(annotation);
 					}
 				}
@@ -119,7 +119,7 @@ public class AnnotationRetrieval {
 					while (cursor.isValid()) {
 						cursor.moveToNext();
 						Annotation annotation = (Annotation) cursor.get();
-						if (adjacentClass.isInstance(annotation) && annotation.getBegin() >= focusAnnotation.getEnd()) return adjacentClass
+						if (adjacentClass.isInstance(annotation) && annotation.getBegin() == focusAnnotation.getEnd()) return adjacentClass
 						.cast(annotation);
 					}
 				}

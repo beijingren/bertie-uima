@@ -36,6 +36,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
+import org.apache.uima.jcas.tcas.Annotation;
 
 import com.google.common.base.Joiner;
 
@@ -211,12 +212,18 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		FSIndex measureIndex = aJCas.getAnnotationIndex(Measure.type);
 		FSIterator measureIterator = measureIndex.iterator();
 		while (measureIterator.hasNext()) {
-			Measure measure = (Measure)measureIterator.next();
-
+			//Measure measure = (Measure)measureIterator.next();
+			Annotation annotation = (Annotation)measureIterator.next();
+			Measure measure = (Measure)annotation;
 			String unit = measure.getUnit();
 			if (unit.equals("year") || unit.equals("years")) {
-				//Annotation era = AnnotationRetrieval.getAdjacentAnnotation(aJCas,
-				//    measure, Date.class, true);
+				Annotation eraAnnotation = AnnotationRetrieval.getAdjacentAnnotation(aJCas,
+				    annotation, Date.class, true);
+
+				if (eraAnnotation != null) {
+					Date era = (Date)eraAnnotation;
+					String notBefore = era.getNotBefore();
+				}
 			}
 		}
 

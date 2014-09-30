@@ -263,7 +263,7 @@
 				</featureDescription>
 				<featureDescription>
 					<name>unit</name>
-					<description>Value of this measure</description>
+					<description>Unit of this measure</description>
 					<rangeTypeName>uima.cas.String</rangeTypeName>
 				</featureDescription>
 			</features>
