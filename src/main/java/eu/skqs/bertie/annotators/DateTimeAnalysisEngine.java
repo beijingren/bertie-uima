@@ -212,17 +212,27 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		FSIndex measureIndex = aJCas.getAnnotationIndex(Measure.type);
 		FSIterator measureIterator = measureIndex.iterator();
 		while (measureIterator.hasNext()) {
-			//Measure measure = (Measure)measureIterator.next();
 			Annotation annotation = (Annotation)measureIterator.next();
 			Measure measure = (Measure)annotation;
+
 			String unit = measure.getUnit();
-			if (unit.equals("year") || unit.equals("years")) {
+			if ("year".equals(unit) || "years".equals(unit)) {
 				Annotation eraAnnotation = AnnotationRetrieval.getAdjacentAnnotation(aJCas,
 				    annotation, Date.class, true);
 
 				if (eraAnnotation != null) {
 					Date era = (Date)eraAnnotation;
-					String notBefore = era.getNotBefore();
+
+					Integer notBefore = Integer.parseInt(era.getNotBefore());
+					Integer quantity = measure.getQuantity();
+					Integer dateWhen = notBefore + quantity - 1;
+
+					Date date = new Date(aJCas);
+					date.setBegin(era.getBegin());
+					date.setEnd(measure.getEnd());
+					date.setWhen(dateWhen.toString());
+
+					date.addToIndexes();
 				}
 			}
 		}
