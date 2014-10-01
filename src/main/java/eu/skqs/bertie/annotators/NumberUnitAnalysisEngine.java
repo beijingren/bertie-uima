@@ -92,7 +92,7 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 		mSpecialNumeralsPattern = Pattern.compile("(正)(日|月)", Pattern.MULTILINE);
 
 		mTimePostfixMap = new HashMap<String, String>();
-		mTimePostfixMap.put("歲", "year");
+		//mTimePostfixMap.put("歲", "year"); TODO: BUG at the end of dates
 		mTimePostfixMap.put("年", "year");
 		mTimePostfixMap.put("日", "day");
 		mTimePostfixMap.put("月", "month");
@@ -105,7 +105,8 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		mTimePostfixPattern = Pattern.compile("(" + Joiner.on("|").join(mTimePostfixMap.keySet()) + ")", Pattern.UNICODE_CHARACTER_CLASS);
 
-		mYearMeasurePattern = Pattern.compile(mNumeralsBase + "(歲|年)");
+		// TODO: 歲 bug
+		mYearMeasurePattern = Pattern.compile(mNumeralsBase + "(年)");
 
 		mFixedTimeExpressionPattern = Pattern.compile(
 		    Joiner.on("|").join(mFixedTimeExpression.keySet()));

@@ -25,6 +25,8 @@ import java.util.Vector;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.FSIndex;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ExternalResource;
 import org.apache.uima.jcas.JCas;
@@ -36,6 +38,7 @@ import com.google.common.base.Joiner;
 
 import eu.skqs.bertie.resources.PlaceNameResource;
 import eu.skqs.type.PlaceName;
+import eu.skqs.type.Measure;
 
 
 public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
@@ -50,6 +53,7 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Patterns
 	private Pattern mPlaceNamePattern;
+	private Pattern mZhouEnumerationPattern;
 
 	private Vector mPlaceNameVector;
 
@@ -68,14 +72,17 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		mPlaceNameVector = placeNameResource.getPlaceNames();
 		mPlaceNamePattern = Pattern.compile(Joiner.on("|").join(
 		    mPlaceNameVector));
+
+		// Patterns
+		mZhouEnumerationPattern = Pattern.compile("(\\p{Alnum}{1})、?", Pattern.UNICODE_CHARACTER_CLASS);
 	}
 
 	@Override
-	public void process(JCas aJCas) throws AnalysisEngineProcessException {
+	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		logger.log(Level.FINE, "PlaceNameAnalysisEngine process...");
 
 		// Get document text
-		String docText = aJCas.getDocumentText();
+		String docText = jcas.getDocumentText();
 
 		int pos = 0;
 		Matcher matcher = null;
@@ -89,7 +96,7 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 			while (matcher.find(pos)) {
 
 				// Found match
-				PlaceName annotation = new PlaceName(aJCas, matcher.start(), matcher.end());
+				PlaceName annotation = new PlaceName(jcas, matcher.start(), matcher.end());
 
 				annotation.addToIndexes();
 
@@ -98,6 +105,56 @@ public class PlaceNameAnalysisEngine extends JCasAnnotator_ImplBase {
 				pos = matcher.end();
 			}
 		}
+
+		// 蓬、閬、渠、達 四州
+		FSIndex measureIndex = jcas.getAnnotationIndex(Measure.type);
+		FSIterator measureIterator = measureIndex.iterator();
+		while (measureIterator.hasNext()) {
+			Measure measure = (Measure)measureIterator.next();
+
+			String unit = measure.getUnit();
+			if ("prefecture".equals(unit) || "prefectures".equals(unit)) {
+
+				int localBegin = measure.getBegin();
+				int prefixLength = measure.getQuantity();
+				int localPos = 0;
+
+				// Prefix
+				String localPrefix = null;
+				try {
+					localPrefix = docText.substring(localBegin-prefixLength, localBegin);
+				} catch (StringIndexOutOfBoundsException e) {
+					continue;
+				}
+
+				// TODO:
+
+				// Prefix with modern interpuction
+				try {
+					localPrefix = docText.substring(localBegin-2*(prefixLength-1)-1, localBegin);
+				} catch (StringIndexOutOfBoundsException e) {
+					continue;
+				}
+
+				matcher = mZhouEnumerationPattern.matcher(localPrefix);
+				while (matcher.find(localPos)) {
+					String zhouString = matcher.group(1) + "州";
+
+					if (mPlaceNameVector.contains(zhouString)) {
+						PlaceName annotation = new PlaceName(jcas);
+
+						annotation.setBegin(localBegin - localPos -1);
+						annotation.setEnd(localBegin - localPos);
+						annotation.addToIndexes();
+					}
+	
+					localPos = matcher.end();
+				}
+			}
+		}
+
+		// 溱、播、溪、思、費等州
+		// 曆襄、鄧、宋、曹等州
 	}
 
 	@Override

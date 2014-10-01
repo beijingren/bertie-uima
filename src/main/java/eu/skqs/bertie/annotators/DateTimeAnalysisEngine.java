@@ -42,7 +42,6 @@ import com.google.common.base.Joiner;
 
 import eu.skqs.bertie.resources.SPARQLSharedResource;
 import eu.skqs.bertie.util.AnnotationRetrieval;
-import eu.skqs.type.Dynasty;
 import eu.skqs.type.PersName;
 import eu.skqs.type.Measure;
 import eu.skqs.type.Date;
@@ -223,13 +222,28 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 				if (eraAnnotation != null) {
 					Date era = (Date)eraAnnotation;
 
-					Integer notBefore = Integer.parseInt(era.getNotBefore());
+					// 歲 BUG
+					Integer notBefore = new Integer(0);
+					try {
+						
+						notBefore = Integer.parseInt(era.getNotBefore());
+					} catch (NumberFormatException e) {
+						logger.log(Level.WARNING, "SPECIAL DATE PATTERN FIX ME!!!");
+						System.out.println(era.getCoveredText());
+						System.out.println(era.getNotBefore());
+						//e.printStackTrace();
+						//System.exit(-1);
+						continue;
+					}
+
 					Integer quantity = measure.getQuantity();
 					Integer dateWhen = notBefore + quantity - 1;
 
 					Date date = new Date(aJCas);
 					date.setBegin(era.getBegin());
 					date.setEnd(measure.getEnd());
+					//date.setNotBefore(dateWhen);
+					//date.setNotAfter(dateWhen);
 					date.setWhen(dateWhen.toString());
 
 					date.addToIndexes();
@@ -255,6 +269,9 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		matcher = mDynastiesExpressionPattern.matcher(docText);
 		while (matcher.find(pos)) {
 			Date annotation = new Date(aJCas, matcher.start(1), matcher.end(1));
+
+			annotation.setNotBefore("9999");
+			annotation.setNotAfter("9999");
 			annotation.addToIndexes();
 
 			totalDynasties++;
@@ -266,6 +283,9 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 		matcher = mTwoCharacterDynastiesPattern.matcher(docText);
 		while (matcher.find(pos)) {
 			Date annotation = new Date(aJCas, matcher.start(1), matcher.end(1));
+
+			annotation.setNotBefore("9999");
+			annotation.setNotAfter("9999");
 			annotation.addToIndexes();
 
 			totalDynasties++;

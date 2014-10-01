@@ -122,7 +122,7 @@
 </date>
 </xsl:template>
 
-<xsl:template match="eu.skqs.type.Date">
+<xsl:template match="eu.skqs.type.Date[@notBefore!='null']">
 <date>
 <xsl:attribute name="notBefore"><xsl:value-of select="@notBefore" /></xsl:attribute>
 <xsl:attribute name="notAfter"><xsl:value-of select="@notAfter" /></xsl:attribute>

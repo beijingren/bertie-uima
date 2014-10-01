@@ -30,6 +30,9 @@ import java.util.HashMap;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.FSIndex;
+import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.descriptor.ExternalResource;
@@ -157,7 +160,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// Found in official histories
 		mZhengshiPattern = Pattern.compile(
-		    "(\\p{Alnum}{2,3})，字(\\p{Alnum}{2,5})，(\\p{Alnum}{2,5})人。",
+		    "(\\p{Alnum}{2,3})，?字(\\p{Alnum}{2,5})，(\\p{Alnum}{2,6})人也?[。，]",
 		    Pattern.UNICODE_CHARACTER_CLASS);
 	}
 
@@ -168,10 +171,22 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// Get document text
 		String docText = aJCas.getDocumentText();
+		int docTextLength = docText.length();
 
-		int pos = 0;
-		Matcher matcher = null;
+		int pos;
+		Matcher matcher;
 
+		JCas personView = null;
+		try {
+			personView = aJCas.createView("PersonView");
+		} catch (CASException e) {
+			throw new AnalysisEngineProcessException(e);
+		}
+
+		Name prevName = null;
+		Name currentName = null;
+
+		pos = 0;
 		matcher = mZhengshiPattern.matcher(docText);
 		while (matcher.find(pos)) {
 
@@ -183,7 +198,67 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 			annotation2.setKey(matcher.group(1));
 			annotation2.addToIndexes();
 
+			// Add an annotation to the person view
+			currentName = new Name(personView, matcher.start(1), matcher.end(1));
+			currentName.setKey(matcher.group(1));
+			currentName.setBegin(matcher.end());
+			personView.addFsToIndexes(currentName);
+
+			if (prevName != null) {
+				prevName.setEnd(matcher.start());
+			}
+
+			prevName = currentName;
 			pos = matcher.end();
+		}
+
+		if (currentName != null) {
+			currentName.setEnd(docTextLength);
+		}
+
+		/*
+		 * Find the given name of a person, between two name definitions.
+		 */
+		FSIndex personViewIndex = personView.getAnnotationIndex(Name.type);
+		FSIterator personViewIterator = personViewIndex.iterator();
+		while (personViewIterator.hasNext()) {
+			Name name = (Name)personViewIterator.next();
+
+			System.out.println(name.getKey());
+
+			String nameGiven = null;
+			String nameKey = name.getKey();
+			Integer nameLength = nameKey.length();
+
+			// TODO: make this smarter: 2 character surname
+			// 4 character names
+			if (nameLength == 2) {
+				nameGiven = nameKey.substring(1, 2);
+			} else if (nameLength == 3) {
+				nameGiven = nameKey.substring(1, 3);
+			} else {
+				continue;
+			}
+
+			String personViewString = docText.substring(name.getBegin(), name.getEnd());
+
+			Pattern givenNamePattern = Pattern.compile(nameGiven);
+			pos = 0;
+			matcher = givenNamePattern.matcher(personViewString);
+			while (matcher.find(pos)) {
+				pos = matcher.end();
+
+				Name annotation = new Name(aJCas);
+				annotation.setBegin(name.getBegin() + matcher.start());
+				annotation.setEnd(name.getBegin() + matcher.end());
+				annotation.setKey(nameKey);
+				annotation.setTEItype("givenName");
+
+				annotation.addToIndexes();
+			}
+
+			// System.out.println(nameGiven);
+
 		}
 
 		// named Individual

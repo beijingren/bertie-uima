@@ -67,7 +67,7 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 		    sparqlSharedResource.getTerms()) + ")");
 
 		mTitlePattern = Pattern.compile("《(.+?)》", Pattern.MULTILINE);
-		mQuotePattern = Pattern.compile("「(.+?)」", Pattern.MULTILINE);
+		mQuotePattern = Pattern.compile("[「“‘](.+?)[」”’]", Pattern.MULTILINE);
 	}
 
 	@Override
