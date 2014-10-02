@@ -157,4 +157,29 @@
 </num>
 </xsl:template>
 
+<xsl:template match="eu.skqs.type.Lg[@TEItype!='null']">
+<lg>
+<xsl:attribute name="type"><xsl:value-of select="@TEItype" /></xsl:attribute>
+<xsl:apply-templates/>
+</lg>
+</xsl:template>
+
+<xsl:template match="eu.skqs.type.Lg[@TEItype='null']">
+<lg>
+<xsl:apply-templates/>
+</lg>
+</xsl:template>
+
+<xsl:template match="eu.skqs.type.L">
+<l>
+<xsl:apply-templates/>
+</l>
+</xsl:template>
+
+<xsl:template match="eu.skqs.type.Head">
+<head>
+<xsl:apply-templates/>
+</head>
+</xsl:template>
+
 </xsl:stylesheet>

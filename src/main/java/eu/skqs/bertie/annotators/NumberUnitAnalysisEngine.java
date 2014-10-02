@@ -99,6 +99,8 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 		mTimePostfixMap.put("州", "prefecture");
 		mTimePostfixMap.put("卷", "chapter");
 		mTimePostfixMap.put("人", "people");
+		mTimePostfixMap.put("里", "LI");
+		mTimePostfixMap.put("家", "household");
 
 		// TODO
 		mTimePostfixMap.put("斛", "HU");
