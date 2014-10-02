@@ -97,6 +97,7 @@ public class DateTimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	// Temporal markers
 	private Pattern	mTemporalPattern = Pattern.compile("以前|以後");
 	private Pattern	mTimeExpressionsPattern;
+	private Pattern	mEmperorTimeExpressionPattern;
 
 	// Annotation
 	private int totalDynasties = 0;

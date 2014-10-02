@@ -270,6 +270,35 @@
 		</typeDescription>
 
 		<typeDescription>
+			<name>eu.skqs.type.Lg</name>
+			<description>Line group</description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+				<featureDescription>
+					<name>TEItype</name>
+					<description>Type of this line group.</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.L</name>
+			<description>A single line.</description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
+			<name>eu.skqs.type.Head</name>
+			<description>Header.</description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
 			<name>eu.skqs.type.DateRange</name>
 			<description>Contains a phrase delimiting a time period</description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>

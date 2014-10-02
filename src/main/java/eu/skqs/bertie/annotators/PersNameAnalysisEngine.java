@@ -162,6 +162,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		mZhengshiPattern = Pattern.compile(
 		    "(\\p{Alnum}{2,3})，?字(\\p{Alnum}{2,5})，(\\p{Alnum}{2,6})人也?[。，]",
 		    Pattern.UNICODE_CHARACTER_CLASS);
+
 	}
 
 	@Override
@@ -235,7 +236,12 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 			if (nameLength == 2) {
 				nameGiven = nameKey.substring(1, 2);
 			} else if (nameLength == 3) {
-				nameGiven = nameKey.substring(1, 3);
+				Boolean b = Pattern.matches("歐陽", nameKey.substring(0, 2));
+				if (b) {
+					nameGiven = nameKey.substring(2, 3);
+				} else {
+					nameGiven = nameKey.substring(1, 3);
+				}
 			} else {
 				continue;
 			}

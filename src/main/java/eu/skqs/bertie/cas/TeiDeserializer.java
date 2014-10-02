@@ -41,6 +41,9 @@ import eu.skqs.type.Body;
 import eu.skqs.type.Date;
 import eu.skqs.type.DateRange;
 import eu.skqs.type.Div;
+import eu.skqs.type.Head;
+import eu.skqs.type.L;
+import eu.skqs.type.Lg;
 import eu.skqs.type.Measure;
 import eu.skqs.type.Name;
 import eu.skqs.type.Num;
@@ -98,6 +101,9 @@ public class TeiDeserializer {
 		private static final String TAG_TIME = "time";
 		private static final String TAG_TITLE = "title";
 		private static final String TAG_TITLESTMT = "titleStmt";
+		private static final String TAG_LG = "lg";
+		private static final String TAG_L = "l";
+		private static final String TAG_HEAD = "head";
 
 		private boolean captureText = false;
 		private boolean mTitleStmt = false;
@@ -116,6 +122,9 @@ public class TeiDeserializer {
 		private Stack mTermStack = new Stack();
 		private Stack mNameStack = new Stack();
 		private Stack mDateStack = new Stack();
+		private Stack mLgStack = new Stack();
+		private Stack mLStack = new Stack();
+		private Stack mHeadStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
@@ -252,6 +261,27 @@ public class TeiDeserializer {
 					annotation.setNotAfter(notAfter);
 				}
 				mDateStack.push(annotation);
+			} else if (TAG_LG.equals(qName)) {
+				Lg annotation = new Lg(mJCas);
+
+				annotation.setBegin(buffer.length());
+
+				String type = aAttributes.getValue("type");
+				if (type != null) {
+					annotation.setTEItype(type);
+				}
+
+				mLgStack.push(annotation);
+			} else if (TAG_L.equals(qName)) {
+				L annotation = new L(mJCas);
+
+				annotation.setBegin(buffer.length());
+				mLStack.push(annotation);
+			} else if (TAG_HEAD.equals(qName)) {
+				Head annotation = new Head(mJCas);
+
+				annotation.setBegin(buffer.length());
+				mHeadStack.push(annotation);
 			}
 
 			tagStart = buffer.length();
@@ -384,6 +414,21 @@ public class TeiDeserializer {
 				annotation.addToIndexes();
 			} else if (TAG_NAME.equals(qName) && !mTeiHeader) {
 				Name annotation = (Name)mNameStack.pop();
+
+				annotation.setEnd(buffer.length());
+				annotation.addToIndexes();
+			} else if (TAG_LG.equals(qName)) {
+				Lg annotation = (Lg)mLgStack.pop();
+
+				annotation.setEnd(buffer.length());
+				annotation.addToIndexes();
+			} else if (TAG_L.equals(qName)) {
+				L annotation = (L)mLStack.pop();
+
+				annotation.setEnd(buffer.length());
+				annotation.addToIndexes();
+			} else if (TAG_HEAD.equals(qName)) {
+				Head annotation = (Head)mHeadStack.pop();
 
 				annotation.setEnd(buffer.length());
 				annotation.addToIndexes();
