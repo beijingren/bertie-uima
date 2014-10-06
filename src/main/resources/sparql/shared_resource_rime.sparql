@@ -1,0 +1,13 @@
+PREFIX : <http://example.org/owl/sikuquanshu#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT
+	(strafter(str(?subject), str(:)) AS ?glyph)
+	(str(?object1) AS ?rime)
+	(str(?object2) AS ?tone)
+{
+	?subject rdf:type :Glyph ;
+	:rime ?object1 ;
+	:tone ?object2 .
+}

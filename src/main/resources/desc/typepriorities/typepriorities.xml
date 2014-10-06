@@ -37,6 +37,7 @@
 			<type>eu.skqs.type.Measure</type>
 			<type>eu.skqs.type.Name</type>
 			<type>eu.skqs.type.Num</type>
+			<type>eu.skqs.type.Rhyme</type>
 			<type>eu.skqs.type.Pc</type>
                 </priorityList>
         </priorityLists>

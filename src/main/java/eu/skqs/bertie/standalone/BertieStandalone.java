@@ -79,6 +79,7 @@ import eu.skqs.bertie.annotators.PersNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PlaceNameAnalysisEngine;
 import eu.skqs.bertie.annotators.PreprocessAnalysisEngine;
 import eu.skqs.bertie.annotators.PreprocessPlainAnalysisEngine;
+import eu.skqs.bertie.annotators.RimeAnalysisEngine;
 import eu.skqs.bertie.cas.TeiCasSerializer;
 import eu.skqs.bertie.collection.TeiCollectionReader;
 import eu.skqs.bertie.resources.PersNameResource;
@@ -180,6 +181,16 @@ public class BertieStandalone {
 		bindResource(engine5, PlaceNameAnalysisEngine.MODEL_KEY,
 		    PlaceNameResource.class, owlPath);
 
+		// Rime
+		AnalysisEngineDescription engine6 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    RimeAnalysisEngine.class);
+
+		// Shared resource
+		bindResource(engine6, RimeAnalysisEngine.MODEL_KEY,
+		    SPARQLSharedResource.class, owlPath);
+
+
 		// DEBUG
 		AnalysisEngineDescription dump =
 		    AnalysisEngineFactory.createEngineDescription(
@@ -197,7 +208,7 @@ public class BertieStandalone {
 		    TeiAnalysisEngine.class);
 
 		SimplePipeline.runPipeline(reader, engineA, engine0, engine1, engine2,
-		    engine3, engine4, engine5, deduplicator, writer);
+		    engine3, engine4, engine5, engine6, deduplicator, writer);
 	}
 
 	public static void processWithFile() throws Exception {

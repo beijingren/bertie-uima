@@ -160,7 +160,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// Found in official histories
 		mZhengshiPattern = Pattern.compile(
-		    "(\\p{Alnum}{2,3})，?字(\\p{Alnum}{2,5})，(\\p{Alnum}{2,6})人也?[。，]",
+		    "(\\p{Alnum}{2,3})，?字(\\p{Alnum}{2,5})，(\\p{Alnum}{1,6})人也?[。，]",
 		    Pattern.UNICODE_CHARACTER_CLASS);
 
 	}

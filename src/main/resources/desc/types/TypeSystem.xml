@@ -283,6 +283,24 @@
 		</typeDescription>
 
 		<typeDescription>
+			<name>eu.skqs.type.Rhyme</name>
+			<description>rhyme</description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+				<featureDescription>
+					<name>label</name>
+					<description>rhyme group label.</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
+				<featureDescription>
+					<name>tone</name>
+					<description>tone.</description>
+					<rangeTypeName>uima.cas.String</rangeTypeName>
+				</featureDescription>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
 			<name>eu.skqs.type.L</name>
 			<description>A single line.</description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>

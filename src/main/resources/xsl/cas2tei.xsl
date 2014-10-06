@@ -170,6 +170,19 @@
 </lg>
 </xsl:template>
 
+<xsl:template match="eu.skqs.type.Rhyme[@label!='null']">
+<rhyme>
+<xsl:attribute name="label"><xsl:value-of select="@label" /></xsl:attribute>
+<xsl:apply-templates/>
+</rhyme>
+</xsl:template>
+
+<xsl:template match="eu.skqs.type.Rhyme[@label='null']">
+<rhyme>
+<xsl:apply-templates/>
+</rhyme>
+</xsl:template>
+
 <xsl:template match="eu.skqs.type.L">
 <l>
 <xsl:apply-templates/>

@@ -57,6 +57,7 @@ import eu.skqs.type.Term;
 import eu.skqs.type.Text;
 import eu.skqs.type.Time;
 import eu.skqs.type.Title;
+import eu.skqs.type.Rhyme;
 
 
 public class TeiDeserializer {
@@ -104,6 +105,7 @@ public class TeiDeserializer {
 		private static final String TAG_LG = "lg";
 		private static final String TAG_L = "l";
 		private static final String TAG_HEAD = "head";
+		private static final String TAG_RHYME = "rhyme";
 
 		private boolean captureText = false;
 		private boolean mTitleStmt = false;
@@ -125,6 +127,7 @@ public class TeiDeserializer {
 		private Stack mLgStack = new Stack();
 		private Stack mLStack = new Stack();
 		private Stack mHeadStack = new Stack();
+		private Stack mRhymeStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
@@ -282,6 +285,17 @@ public class TeiDeserializer {
 
 				annotation.setBegin(buffer.length());
 				mHeadStack.push(annotation);
+			} else if (TAG_RHYME.equals(qName)) {
+				Rhyme annotation = new Rhyme(mJCas);
+
+				annotation.setBegin(buffer.length());
+
+				String label = aAttributes.getValue("label");
+				if (label != null) {
+					annotation.setLabel(label);
+				}
+
+				mRhymeStack.push(annotation);
 			}
 
 			tagStart = buffer.length();
@@ -429,6 +443,11 @@ public class TeiDeserializer {
 				annotation.addToIndexes();
 			} else if (TAG_HEAD.equals(qName)) {
 				Head annotation = (Head)mHeadStack.pop();
+
+				annotation.setEnd(buffer.length());
+				annotation.addToIndexes();
+			} else if (TAG_RHYME.equals(qName)) {
+				Rhyme annotation = (Rhyme)mRhymeStack.pop();
 
 				annotation.setEnd(buffer.length());
 				annotation.addToIndexes();

@@ -101,6 +101,7 @@ public class NumberUnitAnalysisEngine extends JCasAnnotator_ImplBase {
 		mTimePostfixMap.put("人", "people");
 		mTimePostfixMap.put("里", "LI");
 		mTimePostfixMap.put("家", "household");
+		mTimePostfixMap.put("騎", "rider");
 
 		// TODO
 		mTimePostfixMap.put("斛", "HU");
