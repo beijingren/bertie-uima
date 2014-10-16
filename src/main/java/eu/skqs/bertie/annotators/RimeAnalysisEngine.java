@@ -92,7 +92,6 @@ public class RimeAnalysisEngine extends JCasAnnotator_ImplBase {
 					rhymeAnnotation.addToIndexes();
 				}
 
-
 				for (int i = 0; i < lineLength-1; i++) {
 					String lineChar = line.substring(i, i+1);
 

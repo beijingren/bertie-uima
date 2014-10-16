@@ -40,14 +40,22 @@ public class PreprocessPlainAnalysisEngine extends JCasAnnotator_ImplBase {
 	// Logger
 	private Logger logger;
 
+	// Config parameter
+	public static final String PARAM_MODE = "AnalysisMode";
+
 	// Patterns
 	private Pattern mParagraphPattern;
+
+	// Params
+	private String mMode;
 
 	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {
 		super.initialize(uimaContext);
 
 		logger = uimaContext.getLogger();
 		logger.log(Level.FINE, "PreprocessPlainAnalysisEngine initialize...");
+
+		mMode = ((String) uimaContext.getConfigParameterValue(PARAM_MODE)).trim();
 
 		mParagraphPattern = Pattern.compile("(^.*\\S+.*$)+", Pattern.MULTILINE);
 	}
@@ -57,6 +65,10 @@ public class PreprocessPlainAnalysisEngine extends JCasAnnotator_ImplBase {
 		logger.log(Level.FINE, "PreprocessPlainAnalysisEngine process...");
 
 		String documentText = jcas.getDocumentText();
+
+		if (mMode.equals("poetry")) {
+			System.out.println("XXXXXX poetry");
+		}
 
 		// Paragraphs
 		int pos = 0;

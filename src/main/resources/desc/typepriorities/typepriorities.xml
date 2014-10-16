@@ -33,6 +33,7 @@
 			<type>eu.skqs.type.Quote</type>
 			<type>eu.skqs.type.PersName</type>
 			<type>eu.skqs.type.PlaceName</type>
+			<type>eu.skqs.type.Date</type>
 			<type>eu.skqs.type.Term</type>
 			<type>eu.skqs.type.Measure</type>
 			<type>eu.skqs.type.Name</type>

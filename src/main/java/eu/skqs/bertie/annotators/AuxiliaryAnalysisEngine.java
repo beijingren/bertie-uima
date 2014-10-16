@@ -51,10 +51,15 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 	@ExternalResource(key = MODEL_KEY)
 	private SPARQLSharedResource sparqlSharedResource;
 
+	// Config parameter
+	public static final String PARAM_MODE = "AnalysisMode";
+
 	// Patterns
 	private Pattern mTitlePattern;
 	private Pattern mQuotePattern;
 	private Pattern mTermPattern;
+
+	private String mMode;
 
 	public void initialize(UimaContext uimaContext) throws ResourceInitializationException {
 		super.initialize(uimaContext);
@@ -65,6 +70,9 @@ public class AuxiliaryAnalysisEngine extends JCasAnnotator_ImplBase {
 		// Shared SPARQL resource
 		mTermPattern = Pattern.compile("(" + Joiner.on("|").join(
 		    sparqlSharedResource.getTerms()) + ")");
+
+		// Config parameter
+		//mMode = ((String) uimaContext.getConfigParameterValue(PARAM_MODE)).trim();
 
 		mTitlePattern = Pattern.compile("《(.+?)》", Pattern.MULTILINE);
 		mQuotePattern = Pattern.compile("[「“‘](.+?)[」”’]", Pattern.MULTILINE);

@@ -8,6 +8,6 @@ SELECT DISTINCT
 	(str(?object2) AS ?tone)
 {
 	?subject rdf:type :Glyph ;
-	:rime ?object1 ;
+	:PSY ?object1 ;
 	:tone ?object2 .
 }

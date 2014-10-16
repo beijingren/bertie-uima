@@ -173,12 +173,14 @@
 <xsl:template match="eu.skqs.type.Rhyme[@label!='null']">
 <rhyme>
 <xsl:attribute name="label"><xsl:value-of select="@label" /></xsl:attribute>
+<xsl:attribute name="type"><xsl:value-of select="@tone" /></xsl:attribute>
 <xsl:apply-templates/>
 </rhyme>
 </xsl:template>
 
 <xsl:template match="eu.skqs.type.Rhyme[@label='null']">
 <rhyme>
+<xsl:attribute name="type"><xsl:value-of select="@tone" /></xsl:attribute>
 <xsl:apply-templates/>
 </rhyme>
 </xsl:template>

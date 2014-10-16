@@ -100,6 +100,10 @@ public class BertieStandalone {
 	private static String owlPath = "/docker/dublin-store/rdf/sikuquanshu.owl";
 	private static String typesToRemove = "";
 	private static String filePath;
+	private static String analysisMode;
+
+	private static boolean extractMode = false;
+	private static boolean poetryMode = false;
 
 	// TODO: move to initialize
 	private static String newLine = System.getProperty("line.separator");
@@ -254,7 +258,7 @@ public class BertieStandalone {
 		}
 
 		AnalysisEngineDescription engine0 =
- 		    AnalysisEngineFactory.createEngineDescription(
+		    AnalysisEngineFactory.createEngineDescription(
 		    AuxiliaryAnalysisEngine.class);
 
 		// Shared resource
@@ -366,7 +370,9 @@ public class BertieStandalone {
 
 		AnalysisEngineDescription preprocess =
 		    AnalysisEngineFactory.createEngineDescription(
-		    PreprocessPlainAnalysisEngine.class);
+		    PreprocessPlainAnalysisEngine.class,
+		    PreprocessPlainAnalysisEngine.PARAM_MODE,
+		    analysisMode);
 
 		AnalysisEngineDescription engine0 =
  		    AnalysisEngineFactory.createEngineDescription(
@@ -493,6 +499,19 @@ public class BertieStandalone {
 			typesToRemove = cmdline.getOptionValue("clean");
 		}
 
+		// Check for mode
+		if (cmdline.hasOption("mode")) {
+			String currentMode= cmdline.getOptionValue("mode");
+
+			if (currentMode.equals("extract")) {
+				extractMode = true;
+			} else if (currentMode.equals("poetry")) {
+				poetryMode = true;
+			}
+
+			analysisMode = currentMode;
+		}
+
 		// Check for directory option
 		if (cmdline.hasOption("directory")) {
 			// We support TEI directorys only
@@ -505,19 +524,13 @@ public class BertieStandalone {
 
 			String directoryPath = cmdline.getOptionValue("directory");
 
-			if (cmdline.hasOption("mode")) {
-				String currentMode = cmdline.getOptionValue("mode");
-
-				if (currentMode.equals("extract")) {
-
-					try {
-						standalone.extractWithCollectionReader(directoryPath);
-					} catch (Exception e) {
-					}
-
-					System.exit(0);
+			if (extractMode) {
+				try {
+					standalone.extractWithCollectionReader(directoryPath);
+				} catch (Exception e) {
 				}
 
+				System.exit(0);
 			}
 
 			try {
