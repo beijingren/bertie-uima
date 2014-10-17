@@ -33,6 +33,8 @@ import org.apache.uima.util.Logger;
 
 import eu.skqs.type.Div;
 import eu.skqs.type.P;
+import eu.skqs.type.L;
+import eu.skqs.type.Head;
 
 
 public class PreprocessPlainAnalysisEngine extends JCasAnnotator_ImplBase {
@@ -45,6 +47,7 @@ public class PreprocessPlainAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	// Patterns
 	private Pattern mParagraphPattern;
+	private Pattern mLinePattern;
 
 	// Params
 	private String mMode;
@@ -58,6 +61,7 @@ public class PreprocessPlainAnalysisEngine extends JCasAnnotator_ImplBase {
 		mMode = ((String) uimaContext.getConfigParameterValue(PARAM_MODE)).trim();
 
 		mParagraphPattern = Pattern.compile("(^.*\\S+.*$)+", Pattern.MULTILINE);
+		mLinePattern = Pattern.compile("(^.*\\S+.*$)", Pattern.MULTILINE);
 	}
 
 	@Override
@@ -66,22 +70,56 @@ public class PreprocessPlainAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		String documentText = jcas.getDocumentText();
 
+		int pos;
+		Matcher matcher;
+
 		if (mMode.equals("poetry")) {
-			System.out.println("XXXXXX poetry");
-		}
+			// Poetry
+			boolean first = true;
+			int headPos = 0;
 
-		// Paragraphs
-		int pos = 0;
-		Matcher matcher = mParagraphPattern.matcher(documentText);
-		while (matcher.find(pos)) {
+			pos = 0;
+			matcher = mLinePattern.matcher(documentText);
+			while (matcher.find(pos)) {
+				if (first) {
+					Head head = new Head(jcas, matcher.start(), matcher.end());
 
-			Div div = new Div(jcas, matcher.start(), matcher.end());
+					head.addToIndexes();
+
+					first = false;
+					headPos = matcher.start();
+					pos = matcher.end();
+
+					continue;
+				}
+
+				L l = new L(jcas, matcher.start(), matcher.end());
+
+				l.addToIndexes();
+
+				pos = matcher.end();
+			}
+
+			// Wrap single poem into div
+			Div div = new Div(jcas, headPos, pos);
+			div.setTeitype("poem");
+
 			div.addToIndexes();
 
-			P p = new P(jcas, matcher.start(), matcher.end());
-			p.addToIndexes();
+		} else {
+			// Paragraphs
+			pos = 0;
+			matcher = mParagraphPattern.matcher(documentText);
+			while (matcher.find(pos)) {
 
-			pos = matcher.end();
+				Div div = new Div(jcas, matcher.start(), matcher.end());
+				div.addToIndexes();
+
+				P p = new P(jcas, matcher.start(), matcher.end());
+				p.addToIndexes();
+
+				pos = matcher.end();
+			}
 		}
 	}
 

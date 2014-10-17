@@ -194,7 +194,6 @@ public class BertieStandalone {
 		bindResource(engine6, RimeAnalysisEngine.MODEL_KEY,
 		    SPARQLSharedResource.class, owlPath);
 
-
 		// DEBUG
 		AnalysisEngineDescription dump =
 		    AnalysisEngineFactory.createEngineDescription(
@@ -414,8 +413,17 @@ public class BertieStandalone {
 		bindResource(engine5, PlaceNameAnalysisEngine.MODEL_KEY,
 		    PlaceNameResource.class, owlPath);
 
+		// Rhyme
+		AnalysisEngineDescription engine6 =
+		    AnalysisEngineFactory.createEngineDescription(
+		    RimeAnalysisEngine.class);
+
+		// Shared resource
+		bindResource(engine6, RimeAnalysisEngine.MODEL_KEY,
+		    SPARQLSharedResource.class, owlPath);
+
 		SimplePipeline.runPipeline(jcas, preprocess, engine0, engine1, engine2,
-		    engine3, engine4, engine5);
+		    engine3, engine4, engine5, engine6);
 		TeiCasSerializer teiSer = new TeiCasSerializer();
 
 		result = teiSer.serialize(jcas);
