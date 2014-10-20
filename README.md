@@ -11,5 +11,5 @@ mvn package
 
 After the build is finished you can run bertie as standalone program.
 ```Shell
-java -jar target/bertie-uima-0.0.1-SNAPSHOT.jar --plain --file plain_text_file_to_annotate.txt
+bin/bertie --plain --file plain_text_file_to_annotate.txt
 ```
