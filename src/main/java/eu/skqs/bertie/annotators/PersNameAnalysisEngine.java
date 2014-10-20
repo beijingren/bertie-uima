@@ -160,7 +160,7 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 
 		// Found in official histories
 		mZhengshiPattern = Pattern.compile(
-		    "(\\p{Alnum}{2,3})，?字(\\p{Alnum}{2,5})，(\\p{Alnum}{1,6})人也?[。，]",
+		    "(\\p{Alnum}{2,3})\\s*，?字\\s*(\\p{Alnum}{2,5})\\s*，\\s*(\\p{Alnum}{1,6})人也?[。，]",
 		    Pattern.UNICODE_CHARACTER_CLASS);
 
 	}
@@ -190,7 +190,6 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		pos = 0;
 		matcher = mZhengshiPattern.matcher(docText);
 		while (matcher.find(pos)) {
-
 			PersName annotation = new PersName(aJCas, matcher.start(1), matcher.end(1));
 			annotation.addToIndexes();
 
