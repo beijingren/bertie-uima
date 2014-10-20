@@ -100,7 +100,7 @@ public class BertieStandalone {
 	private static String owlPath = "/docker/dublin-store/rdf/sikuquanshu.owl";
 	private static String typesToRemove = "";
 	private static String filePath;
-	private static String analysisMode;
+	private static String analysisMode = "normal";
 
 	private static boolean extractMode = false;
 	private static boolean poetryMode = false;
