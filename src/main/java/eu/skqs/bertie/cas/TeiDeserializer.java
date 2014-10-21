@@ -295,6 +295,11 @@ public class TeiDeserializer {
 					annotation.setLabel(label);
 				}
 
+				String tone = aAttributes.getValue("type");
+				if (tone != null) {
+					annotation.setTone(tone);
+				}
+
 				mRhymeStack.push(annotation);
 			}
 
