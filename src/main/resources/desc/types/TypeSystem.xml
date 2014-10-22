@@ -317,6 +317,14 @@
 		</typeDescription>
 
 		<typeDescription>
+			<name>eu.skqs.type.OrgName</name>
+			<description>Organisation.</description>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+			<features>
+			</features>
+		</typeDescription>
+
+		<typeDescription>
 			<name>eu.skqs.type.DateRange</name>
 			<description>Contains a phrase delimiting a time period</description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>

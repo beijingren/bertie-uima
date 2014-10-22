@@ -58,6 +58,7 @@ import eu.skqs.type.Text;
 import eu.skqs.type.Time;
 import eu.skqs.type.Title;
 import eu.skqs.type.Rhyme;
+import eu.skqs.type.OrgName;
 
 
 public class TeiDeserializer {
@@ -106,6 +107,7 @@ public class TeiDeserializer {
 		private static final String TAG_L = "l";
 		private static final String TAG_HEAD = "head";
 		private static final String TAG_RHYME = "rhyme";
+		private static final String TAG_ORGNAME = "orgName";
 
 		private boolean captureText = false;
 		private boolean mTitleStmt = false;
@@ -128,6 +130,7 @@ public class TeiDeserializer {
 		private Stack mLStack = new Stack();
 		private Stack mHeadStack = new Stack();
 		private Stack mRhymeStack = new Stack();
+		private Stack mOrgNameStack = new Stack();
 
 		private StringBuffer buffer = new StringBuffer();
 		private int tagStart = 0;
@@ -301,6 +304,12 @@ public class TeiDeserializer {
 				}
 
 				mRhymeStack.push(annotation);
+			} else if (TAG_ORGNAME.equals(qName)) {
+				OrgName annotation = new OrgName(mJCas);
+
+				annotation.setBegin(buffer.length());
+
+				mOrgNameStack.push(annotation);
 			}
 
 			tagStart = buffer.length();
@@ -453,6 +462,11 @@ public class TeiDeserializer {
 				annotation.addToIndexes();
 			} else if (TAG_RHYME.equals(qName)) {
 				Rhyme annotation = (Rhyme)mRhymeStack.pop();
+
+				annotation.setEnd(buffer.length());
+				annotation.addToIndexes();
+			} else if (TAG_ORGNAME.equals(qName)) {
+				OrgName annotation = (OrgName)mOrgNameStack.pop();
 
 				annotation.setEnd(buffer.length());
 				annotation.addToIndexes();
