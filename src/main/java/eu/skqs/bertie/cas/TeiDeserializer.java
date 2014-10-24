@@ -266,6 +266,12 @@ public class TeiDeserializer {
 				if (notAfter != null) {
 					annotation.setNotAfter(notAfter);
 				}
+
+				String when = aAttributes.getValue("when");
+				if (when != null) {
+					annotation.setWhen(when);
+				}
+
 				mDateStack.push(annotation);
 			} else if (TAG_LG.equals(qName)) {
 				Lg annotation = new Lg(mJCas);
