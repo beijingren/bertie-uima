@@ -182,10 +182,14 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		try {
 			personView = aJCas.createView("PersonView");
 		} catch (CASRuntimeException e) {
-			// TODO:
+			// View does already exist
+			try {
+				personView = aJCas.getView("PersonView");
+			} catch (CASException e2) {
+				throw new AnalysisEngineProcessException(e2);
+			}
 		} catch (CASException e) {
-			// Could be already created
-			// TODO: do this properly, but how?
+			throw new AnalysisEngineProcessException(e);
 		}
 
 		Name prevName = null;
