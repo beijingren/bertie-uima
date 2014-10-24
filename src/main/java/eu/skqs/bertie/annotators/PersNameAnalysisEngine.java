@@ -31,6 +31,7 @@ import java.util.HashMap;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -180,8 +181,11 @@ public class PersNameAnalysisEngine extends JCasAnnotator_ImplBase {
 		JCas personView = null;
 		try {
 			personView = aJCas.createView("PersonView");
+		} catch (CASRuntimeException e) {
+			// TODO:
 		} catch (CASException e) {
-			throw new AnalysisEngineProcessException(e);
+			// Could be already created
+			// TODO: do this properly, but how?
 		}
 
 		Name prevName = null;
