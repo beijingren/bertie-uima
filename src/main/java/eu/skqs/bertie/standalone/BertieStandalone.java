@@ -85,6 +85,7 @@ import eu.skqs.bertie.collection.TeiCollectionReader;
 import eu.skqs.bertie.resources.PersNameResource;
 import eu.skqs.bertie.resources.PlaceNameResource;
 import eu.skqs.bertie.resources.SPARQLSharedResource;
+import eu.skqs.bertie.resources.RhymeSharedResource;
 
 import eu.skqs.type.Body;
 import eu.skqs.type.Chapter;
@@ -192,7 +193,7 @@ public class BertieStandalone {
 
 		// Shared resource
 		bindResource(engine6, RimeAnalysisEngine.MODEL_KEY,
-		    SPARQLSharedResource.class, owlPath);
+		    RhymeSharedResource.class, owlPath);
 
 		// DEBUG
 		AnalysisEngineDescription dump =
@@ -413,17 +414,23 @@ public class BertieStandalone {
 		bindResource(engine5, PlaceNameAnalysisEngine.MODEL_KEY,
 		    PlaceNameResource.class, owlPath);
 
-		// Rhyme
-		AnalysisEngineDescription engine6 =
-		    AnalysisEngineFactory.createEngineDescription(
-		    RimeAnalysisEngine.class);
+		if (poetryMode) {
+			// Rhyme
+			AnalysisEngineDescription engine6 =
+			    AnalysisEngineFactory.createEngineDescription(
+			    RimeAnalysisEngine.class);
 
-		// Shared resource
-		bindResource(engine6, RimeAnalysisEngine.MODEL_KEY,
-		    SPARQLSharedResource.class, owlPath);
+			// Shared resource
+			bindResource(engine6, RimeAnalysisEngine.MODEL_KEY,
+			    RhymeSharedResource.class, owlPath);
 
-		SimplePipeline.runPipeline(jcas, preprocess, engine0, engine1, engine2,
-		    engine3, engine4, engine5, engine6);
+			SimplePipeline.runPipeline(jcas, preprocess, engine0, engine1, engine2,
+			    engine3, engine4, engine5, engine6);
+		} else {
+			SimplePipeline.runPipeline(jcas, preprocess, engine0, engine1, engine2,
+			    engine3, engine4, engine5);
+		}
+
 		TeiCasSerializer teiSer = new TeiCasSerializer();
 
 		result = teiSer.serialize(jcas);

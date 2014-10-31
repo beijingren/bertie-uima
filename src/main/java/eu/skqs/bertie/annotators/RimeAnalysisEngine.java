@@ -33,7 +33,7 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
 
-import eu.skqs.bertie.resources.SPARQLSharedResource;
+import eu.skqs.bertie.resources.RhymeSharedResource;
 import eu.skqs.type.SourceDocumentInformation;
 import eu.skqs.type.Lg;
 import eu.skqs.type.L;
@@ -48,7 +48,7 @@ public class RimeAnalysisEngine extends JCasAnnotator_ImplBase {
 	// Shared resources
 	public final static String MODEL_KEY = "RimeResource";
 	@ExternalResource(key = MODEL_KEY)
-	private SPARQLSharedResource sparqlSharedResource;
+	private RhymeSharedResource sparqlSharedResource;
 
 	// Rimes
 	private Map<String, List<String>> mRimesMap;
